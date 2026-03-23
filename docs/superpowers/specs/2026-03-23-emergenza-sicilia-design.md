@@ -53,16 +53,14 @@ GitHub Actions (cron ogni 15 min)
           └─ Crea/aggiorna Event se nuovo/cambiato
 ```
 
-Lo stesso workflow GitHub Actions esegue anche:
-- Sync editoriali WordPress.com → EditorialPost (ogni 30 min)
-- Cleanup SourceItem > 30 giorni
+Il workflow `ingest-feeds.yml` include anche il cleanup dei SourceItem > 30 giorni.
 
 ### 3.2 Ingestion WordPress.com (editoriali)
 
 ```
-GitHub Actions (cron ogni 30 min)
-  └─ POST /api/ingest/wordpress?secret=INGEST_SECRET
-      └─ GET https://public-api.wordpress.com/wp/v2/sites/{SITE}/posts
+GitHub Actions ingest-wordpress.yml (cron ogni 30 min)
+  └─ POST /api/ingest/wordpress
+      └─ GET https://public-api.wordpress.com/wp/v2/sites/{WP_SITE_ID}/posts
           └─ Upsert EditorialPost in Neon (wpId come chiave)
 ```
 
@@ -90,10 +88,10 @@ Admin trigger (POST /api/push/send)
 
 ### Event
 ```
-id            String    @id @default(cuid())
+id            String      @id @default(cuid())
 title         String
 category      EventCategory  // TERREMOTO | MALTEMPO | TRAFFICO | ERUZIONE | INCENDIO | ALLERTA | TRASPORTI
-severity      Severity  // BASSA | MEDIA | ALTA | CRITICA
+severity      Severity    // BASSA | MEDIA | ALTA | CRITICA
 description   String
 source        String
 sourceUrl     String?
@@ -101,11 +99,12 @@ lat           Float?
 lng           Float?
 comune        String?
 provincia     String?
-status        EventStatus  // ATTIVO | MONITORAGGIO | CHIUSO
+status        EventStatus // ATTIVO | MONITORAGGIO | CHIUSO
 tags          String[]
 publishedAt   DateTime
-updatedAt     DateTime  @updatedAt
-sourceItemId  String?   @relation(fields: [sourceItemId], references: [id])
+updatedAt     DateTime    @updatedAt
+sourceItemId  String?
+sourceItem    SourceItem? @relation(fields: [sourceItemId], references: [id])
 reports       Report[]
 ```
 
@@ -126,22 +125,24 @@ event         Event?
 
 ### AlertRule
 ```
-id            String    @id @default(cuid())
-userId        String?   @relation(fields: [userId], references: [id])
+id            String             @id @default(cuid())
+userId        String?
+user          User?              @relation(fields: [userId], references: [id])
 anonSessionId String?
 categories    String[]
 provinces     String[]
 minSeverity   Severity
-channels      AlertChannel[]  // WEB | PUSH | EMAIL
-active        Boolean   @default(true)
-createdAt     DateTime  @default(now())
+channels      AlertChannel[]     // WEB | PUSH  (EMAIL rimosso da MVP)
+active        Boolean            @default(true)
+createdAt     DateTime           @default(now())
 pushSubs      PushSubscription[]
 ```
 
 ### PushSubscription
 ```
 id            String    @id @default(cuid())
-alertRuleId   String    @relation(...)
+alertRuleId   String
+alertRule     AlertRule @relation(fields: [alertRuleId], references: [id])
 endpoint      String    @unique
 p256dh        String
 auth          String
@@ -150,19 +151,20 @@ createdAt     DateTime  @default(now())
 
 ### Report (segnalazioni lettori)
 ```
-id                String    @id @default(cuid())
+id                String       @id @default(cuid())
 userId            String?
 anonId            String?
 text              String
 mediaUrls         String[]
 lat               Float?
 lng               Float?
-status            ReportStatus  // NUOVO | IN_VERIFICA | APPROVATO | RIFIUTATO
-reliabilityScore  Int       // 0–100
+status            ReportStatus // NUOVO | IN_VERIFICA | APPROVATO | RIFIUTATO
+reliabilityScore  Int          // 0–100, calcolato una volta all'invio (statico)
 moderationNote    String?
-eventId           String?   @relation(...)
-ipHash            String    // SHA-256 dell'IP per rate limiting
-createdAt         DateTime  @default(now())
+eventId           String?
+event             Event?       @relation(fields: [eventId], references: [id])
+ipHash            String       // SHA-256 dell'IP per rate limiting
+createdAt         DateTime     @default(now())
 ```
 
 ### EditorialPost (cache WordPress.com)
@@ -206,13 +208,14 @@ alertRules    AlertRule[]
 
 ### AuditLog
 ```
-id            String    @id @default(cuid())
-adminId       String    @relation(...)
-action        String    // APPROVE_REPORT | REJECT_REPORT | CREATE_EVENT | CLOSE_EVENT | ecc.
+id            String   @id @default(cuid())
+adminId       String
+admin         User     @relation(fields: [adminId], references: [id])
+action        String   // APPROVE_REPORT | REJECT_REPORT | CREATE_EVENT | CLOSE_EVENT | ecc.
 entityType    String
 entityId      String
 metadata      Json?
-createdAt     DateTime  @default(now())
+createdAt     DateTime @default(now())
 ```
 
 ---
@@ -387,8 +390,9 @@ Regola accessibilità: la severità è sempre indicata sia con colore che con te
 
 ### F) Segnalazioni lettori
 - Form: testo (max 500 char) + upload foto/video (max 5MB, jpg/png/mp4) + posizione opt-in
-- Rate limit: max 3 invii/ora per IP hash (in-memory su Vercel o DB counter)
-- Pipeline affidabilità (score 0-100):
+- Rate limit: max 3 invii/ora per IP hash — implementato con **DB counter** (Neon), necessario su Vercel serverless dove l'in-memory non è affidabile tra istanze concorrenti. La tabella `RateLimit` tiene `ipHash + windowStart + count`.
+- Media upload: client POST multipart a `/api/reports` → API route salva su **Vercel Blob** via `@vercel/blob` (richiede `BLOB_READ_WRITE_TOKEN`). URL restituito salvato in `mediaUrls[]`.
+- Pipeline affidabilità (score 0-100, calcolato una volta all'invio — valore statico):
   - +30 se posizione fornita e verificata
   - +20 se media allegato
   - +20 se utente registrato (vs anonimo)
@@ -402,7 +406,8 @@ Regola accessibilità: la severità è sempre indicata sia con colore che con te
 - Form `/alert`: seleziona categorie multiple + provincia + soglia severità minima
 - Richiede permesso notifiche browser (Web Push API)
 - Salva PushSubscription + AlertRule in DB
-- Admin può triggerare push manualmente da `/admin/alert`
+- **Trigger automatico:** quando l'ingestion pipeline crea un nuovo Event con severity `ALTA` o `CRITICA`, chiama internamente `sendPushToMatching(event)` — stessa logica del trigger manuale admin
+- Admin può triggerare push manualmente da `/admin/alert` per qualsiasi evento
 - Struttura push notification: titolo evento, severità, area, link pagina evento
 - Service Worker: installazione PWA, cache offline per home e mappa
 - `manifest.json`: nome, icone, theme_color, display standalone
@@ -471,7 +476,7 @@ Regola accessibilità: la severità è sempre indicata sia con colore che con te
 - `sitemap.ts` generato dinamicamente (eventi attivi + articoli)
 - `robots.ts`: allow tutto tranne `/admin`
 - `next/image` per ottimizzazione immagini
-- ISR (Incremental Static Regeneration): home ogni 60s, pagine evento ogni 30s
+- ISR (Incremental Static Regeneration): home ogni 60s, pagine evento ogni 30s. **Nota:** per un portale emergenze, 30–60s di dati potenzialmente stale è accettabile per i casi normali. Per eventi `CRITICA`, il componente `EventCard` e la hero usano SWR client-side polling (ogni 30s) come layer aggiuntivo per ridurre la latenza percepita senza costi server.
 - Skeleton loading per lista eventi e mappa
 - Bundle split: mappa Leaflet caricata solo su `/mappa` e `/eventi/[id]` (dynamic import)
 
@@ -482,7 +487,8 @@ Regola accessibilità: la severità è sempre indicata sia con colore che con te
 - Libreria: `next-intl`
 - Lingue: IT (default), EN
 - File: `messages/it.json`, `messages/en.json`
-- Routing: `/en/...` per inglese, `/...` per italiano
+- Routing: basato su `middleware.ts` con prefisso `/en/...` per inglese e `/...` per italiano (locale-prefix strategy). Il layout App Router usa `app/[locale]/` come segmento wrapper con `generateStaticParams` per IT e EN.
+- `middleware.ts` (nella root) gestisce redirect e cookie locale
 - Scope MVP: UI principale (navigation, labels, stati, CTA). Contenuti editoriali e testi evento non tradotti (fonte esterna).
 
 ---
@@ -514,8 +520,10 @@ Regola accessibilità: la severità è sempre indicata sia con colore che con te
 
 ```
 emergenza-sicilia/
+├── middleware.ts                 # next-intl locale routing + admin auth guard
 ├── app/                          # Next.js App Router
-│   ├── (public)/                 # Layout pubblico
+│   ├── [locale]/                 # Wrapper locale (IT/EN) — next-intl
+│   │   ├── layout.tsx            # Layout pubblico con TopBar e Footer
 │   │   ├── page.tsx              # Home
 │   │   ├── mappa/page.tsx
 │   │   ├── eventi/[id]/page.tsx
@@ -524,8 +532,11 @@ emergenza-sicilia/
 │   │   ├── editoriale/[slug]/page.tsx
 │   │   ├── segnala/page.tsx
 │   │   ├── alert/page.tsx
-│   │   └── premium/page.tsx
-│   ├── admin/                    # Layout admin (protetto)
+│   │   ├── premium/page.tsx
+│   │   └── privacy/page.tsx      # Privacy policy (GDPR)
+│   ├── admin/                    # Layout admin (protetto, fuori da [locale])
+│   │   ├── layout.tsx            # Shell admin con sidebar nav
+│   │   ├── login/page.tsx        # Pagina login admin (custom, design system)
 │   │   ├── page.tsx              # Dashboard
 │   │   ├── eventi/page.tsx
 │   │   ├── segnalazioni/page.tsx
@@ -541,10 +552,11 @@ emergenza-sicilia/
 │   │   ├── reports/route.ts
 │   │   ├── admin/reports/[id]/route.ts
 │   │   ├── editorial/route.ts
+│   │   ├── editorial/[slug]/route.ts  # Singolo editoriale + paywall check
 │   │   ├── alerts/subscribe/route.ts
 │   │   ├── push/send/route.ts
 │   │   └── sources/route.ts
-│   ├── layout.tsx
+│   ├── layout.tsx                # Root layout (fonts, providers)
 │   └── globals.css
 ├── components/
 │   ├── ui/                       # shadcn/ui reskinned
@@ -610,6 +622,9 @@ VAPID_PUBLIC_KEY=...
 VAPID_PRIVATE_KEY=...
 VAPID_EMAIL=mailto:admin@emergenzasicilia.it
 
+# Media upload (Vercel Blob)
+BLOB_READ_WRITE_TOKEN=...
+
 # Admin iniziale (seed)
 ADMIN_EMAIL=admin@emergenzasicilia.it
 ADMIN_PASSWORD=...
@@ -619,32 +634,49 @@ ADMIN_PASSWORD=...
 
 ## 16. GitHub Actions workflow (ingestion)
 
+Due workflow separati per frequenze diverse:
+
 ```yaml
-# .github/workflows/ingest.yml
-name: Ingest feeds
+# .github/workflows/ingest-feeds.yml
+name: Ingest feeds (ogni 15 min)
 
 on:
   schedule:
-    - cron: '*/15 * * * *'   # ogni 15 minuti
-  workflow_dispatch:           # trigger manuale
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
 
 jobs:
   ingest:
     runs-on: ubuntu-latest
     steps:
-      - name: Trigger ingestion
+      - name: Trigger feed ingestion
         run: |
-          curl -X POST \
+          curl -f -X POST \
             -H "x-ingest-secret: ${{ secrets.INGEST_SECRET }}" \
             https://emergenza-sicilia.vercel.app/api/ingest
+```
 
-      - name: Sync WordPress
-        if: ${{ github.event.schedule == '*/30 * * * *' || github.event_name == 'workflow_dispatch' }}
+```yaml
+# .github/workflows/ingest-wordpress.yml
+name: Sync WordPress editoriali (ogni 30 min)
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+jobs:
+  sync-wp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync WordPress.com posts
         run: |
-          curl -X POST \
+          curl -f -X POST \
             -H "x-ingest-secret: ${{ secrets.INGEST_SECRET }}" \
             https://emergenza-sicilia.vercel.app/api/ingest/wordpress
 ```
+
+**Nota:** i due workflow sono separati intenzionalmente: frequenze diverse, failure isolation, retry indipendente. Il flag `-f` su curl fa fallire il job se l'endpoint risponde con errore HTTP.
 
 ---
 
@@ -661,7 +693,32 @@ Il seed (`prisma/seed.ts`) crea:
 
 ---
 
-## 18. Decisioni di design chiave
+## 18. GDPR e Privacy (EU)
+
+L'app raccoglie dati personali di utenti EU (email, IP hash, geolocalizzazione, push subscription). Requisiti minimi MVP:
+
+### Pagine obbligatorie
+- `/privacy` — informativa privacy completa (GDPR Art. 13): titolare, dati raccolti, finalità, base giuridica, periodo di conservazione, diritti dell'interessato
+- Cookie banner minimale (solo cookie tecnici necessari; no analytics di terze parti nell'MVP)
+
+### Conservazione dati
+| Entità | Periodo conservazione | Motivazione |
+|--------|----------------------|-------------|
+| Report (segnalazioni) | 90 giorni dopo chiusura evento collegato | Necessario per flusso moderazione |
+| SourceItem | 30 giorni | Cleanup automatico via ingestion job |
+| PushSubscription | Fino a revoca utente o 12 mesi inattività | Necessario per erogare servizio |
+| AuditLog | 12 mesi | Accountability admin |
+| User (registrato) | Fino a cancellazione account | Servizio attivo |
+
+### Diritti interessato
+- Cancellazione account: endpoint `DELETE /api/user/me` (cancella User, AlertRule, PushSubscription associati)
+- Portabilità: fuori scope MVP, segnalato come backlog
+
+### IP hashing
+- Gli IP vengono hashati (SHA-256 + salt env) prima del salvataggio — non memorizzati in chiaro
+- Usati solo per rate limiting, non per profilazione
+
+## 19. Decisioni di design chiave
 
 | Decisione | Scelta | Motivazione |
 |-----------|--------|-------------|
@@ -671,7 +728,7 @@ Il seed (`prisma/seed.ts`) crea:
 | DB hosting | Neon free | PostgreSQL serverless, Prisma-native, free tier generoso |
 | Auth | NextAuth v5 | Standard Next.js, estensibile, email/password + futuro OAuth |
 | Editorial cache | Sync ogni 30 min in Neon | Nessuna call WP a runtime, resiliente |
-| Media upload | Vercel Blob (MVP) | Gratuito su free tier per MVP, migrazione S3/Cloudinary semplice |
+| Media upload | Vercel Blob (MVP) | Gratuito su free tier per MVP, migrazione S3/Cloudinary semplice. Richiede BLOB_READ_WRITE_TOKEN |
 | i18n scope | IT/EN UI only | Contenuti da fonti esterne non traducibili automaticamente |
 | Geoloc | Opt-in esplicito | Privacy, GDPR, affidabilità |
 
