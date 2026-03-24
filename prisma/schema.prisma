@@ -1,0 +1,229 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EventCategory {
+  TERREMOTO
+  MALTEMPO
+  TRAFFICO
+  ERUZIONE
+  INCENDIO
+  ALLERTA
+  TRASPORTI
+}
+
+enum Severity {
+  BASSA
+  MEDIA
+  ALTA
+  CRITICA
+}
+
+enum EventStatus {
+  ATTIVO
+  MONITORAGGIO
+  CHIUSO
+}
+
+enum SourceName {
+  INGV
+  PC
+  ANAS
+  MANUALE
+}
+
+enum SourceType {
+  RSS
+  API
+  MANUAL
+}
+
+enum ReportStatus {
+  NUOVO
+  IN_VERIFICA
+  APPROVATO
+  RIFIUTATO
+}
+
+enum AlertChannel {
+  WEB
+  PUSH
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum EditorialType {
+  EDITORIALE
+  INTERVISTA
+  APPROFONDIMENTO
+}
+
+enum PaywallType {
+  FREE
+  PREMIUM
+}
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  passwordHash String
+  role         UserRole    @default(USER)
+  isPremium    Boolean     @default(false)
+  createdAt    DateTime    @default(now())
+  alertRules   AlertRule[]
+  auditLogs    AuditLog[]
+}
+
+model Event {
+  id           String        @id @default(cuid())
+  title        String
+  category     EventCategory
+  severity     Severity
+  description  String
+  source       String
+  sourceUrl    String?
+  lat          Float?
+  lng          Float?
+  comune       String?
+  provincia    String?
+  status       EventStatus   @default(ATTIVO)
+  tags         String[]
+  publishedAt  DateTime
+  updatedAt    DateTime      @updatedAt
+  sourceItemId String?
+  sourceItem   SourceItem?   @relation(fields: [sourceItemId], references: [id])
+  reports      Report[]
+
+  @@index([category])
+  @@index([severity])
+  @@index([status])
+  @@index([publishedAt])
+  @@index([provincia])
+}
+
+model SourceItem {
+  id          String     @id @default(cuid())
+  source      SourceName
+  type        SourceType
+  title       String
+  text        String?
+  url         String?
+  publishedAt DateTime
+  hashDedup   String     @unique
+  rawJson     Json?
+  createdAt   DateTime   @default(now())
+  events      Event[]
+
+  @@index([source])
+  @@index([createdAt])
+}
+
+model AlertRule {
+  id            String             @id @default(cuid())
+  userId        String?
+  user          User?              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  anonSessionId String?
+  categories    String[]
+  provinces     String[]
+  minSeverity   Severity
+  channels      AlertChannel[]
+  active        Boolean            @default(true)
+  createdAt     DateTime           @default(now())
+  pushSubs      PushSubscription[]
+
+  @@index([active])
+}
+
+model PushSubscription {
+  id          String    @id @default(cuid())
+  alertRuleId String
+  alertRule   AlertRule @relation(fields: [alertRuleId], references: [id], onDelete: Cascade)
+  endpoint    String    @unique
+  p256dh      String
+  auth        String
+  createdAt   DateTime  @default(now())
+}
+
+model Report {
+  id               String       @id @default(cuid())
+  userId           String?
+  anonId           String?
+  text             String
+  mediaUrls        String[]
+  lat              Float?
+  lng              Float?
+  status           ReportStatus @default(NUOVO)
+  reliabilityScore Int          @default(0)
+  moderationNote   String?
+  eventId          String?
+  event            Event?       @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  ipHash           String
+  createdAt        DateTime     @default(now())
+
+  @@index([status])
+  @@index([createdAt])
+  @@index([reliabilityScore])
+}
+
+model EditorialPost {
+  id          String        @id @default(cuid())
+  wpId        Int           @unique
+  title       String
+  slug        String        @unique
+  summary     String
+  content     String
+  type        EditorialType @default(EDITORIALE)
+  featured    Boolean       @default(false)
+  paywall     PaywallType   @default(FREE)
+  publishedAt DateTime
+  syncedAt    DateTime      @updatedAt
+  readingTime Int           @default(5)
+  imageUrl    String?
+
+  @@index([publishedAt])
+  @@index([type])
+  @@index([featured])
+}
+
+model SponsorBanner {
+  id       String    @id @default(cuid())
+  position String
+  imageUrl String
+  linkUrl  String
+  active   Boolean   @default(true)
+  startAt  DateTime?
+  endAt    DateTime?
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  adminId    String
+  admin      User     @relation(fields: [adminId], references: [id])
+  action     String
+  entityType String
+  entityId   String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
+}
+
+model RateLimit {
+  id          String   @id @default(cuid())
+  ipHash      String
+  windowStart DateTime
+  count       Int      @default(1)
+
+  @@unique([ipHash, windowStart])
+  @@index([windowStart])
+}
