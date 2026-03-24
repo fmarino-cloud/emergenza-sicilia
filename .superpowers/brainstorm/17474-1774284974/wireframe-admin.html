@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe Admin + Segnalazioni — Emergenza Sicilia</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #f1f3f4; color: #202124; font-size: 14px; }
+
+  /* ADMIN SHELL */
+  .admin-shell { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+
+  /* SIDEBAR NAV */
+  .admin-nav {
+    background: #202124;
+    color: white;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .admin-logo {
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255,255,255,.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .admin-logo-dot { width: 24px; height: 24px; background: #EA4335; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .admin-section-label { padding: 16px 20px 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,.4); letter-spacing: .8px; }
+  .admin-nav-item {
+    padding: 9px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: rgba(255,255,255,.7);
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all .15s;
+  }
+  .admin-nav-item:hover { background: rgba(255,255,255,.07); color: white; }
+  .admin-nav-item.active { background: rgba(26,115,232,.2); color: #8ab4f8; border-left-color: #1A73E8; }
+  .admin-nav-item .badge-count { margin-left: auto; background: #EA4335; color: white; border-radius: 10px; padding: 1px 6px; font-size: 10px; font-weight: 700; }
+
+  /* ADMIN CONTENT */
+  .admin-content { padding: 24px; overflow-y: auto; }
+  .admin-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .admin-page-title { font-size: 22px; font-weight: 700; }
+  .admin-page-sub { font-size: 13px; color: #5F6368; margin-top: 2px; }
+  .btn { padding: 8px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+  .btn-primary { background: #1A73E8; color: white; }
+  .btn-outline { background: white; color: #1A73E8; border: 1px solid #1A73E8; }
+  .btn-danger { background: #EA4335; color: white; }
+  .btn-success { background: #34A853; color: white; }
+  .btn-sm { padding: 5px 12px; font-size: 12px; border-radius: 6px; }
+
+  /* KPI CARDS */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .kpi-card { background: white; border-radius: 12px; border: 1px solid #DADCE0; padding: 16px 18px; }
+  .kpi-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #5F6368; letter-spacing: .5px; margin-bottom: 8px; }
+  .kpi-value { font-size: 28px; font-weight: 700; color: #202124; }
+  .kpi-sub { font-size: 12px; color: #9AA0A6; margin-top: 4px; }
+  .kpi-trend-up { color: #34A853; font-size: 11px; font-weight: 600; }
+  .kpi-trend-warn { color: #FBBC05; font-size: 11px; font-weight: 600; }
+  .kpi-trend-danger { color: #EA4335; font-size: 11px; font-weight: 600; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 2px; border-bottom: 2px solid #DADCE0; margin-bottom: 20px; }
+  .tab { padding: 10px 20px; font-size: 14px; font-weight: 500; color: #5F6368; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+  .tab.active { color: #1A73E8; border-bottom-color: #1A73E8; font-weight: 600; }
+
+  /* TABLE */
+  .data-table { background: white; border-radius: 12px; border: 1px solid #DADCE0; overflow: hidden; }
+  .table-header { padding: 14px 18px; border-bottom: 1px solid #DADCE0; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .search-input { padding: 7px 12px; border: 1px solid #DADCE0; border-radius: 8px; font-size: 13px; width: 220px; color: #202124; }
+  table { width: 100%; border-collapse: collapse; }
+  th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #5F6368; letter-spacing: .4px; background: #f8f9fa; border-bottom: 1px solid #DADCE0; }
+  td { padding: 12px 16px; border-bottom: 1px solid #f1f3f4; font-size: 13px; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #f8f9fa; }
+
+  /* BADGE STATUS */
+  .status { padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .status-nuovo { background: #e8f0fe; color: #1A73E8; }
+  .status-verifica { background: #fef7e0; color: #b8860b; }
+  .status-approvato { background: #e6f4ea; color: #137333; }
+  .status-rifiutato { background: #fce8e6; color: #c5221f; }
+  .status-attivo { background: #e6f4ea; color: #137333; }
+  .status-chiuso { background: #f1f3f4; color: #5F6368; }
+  .sev-alta { background: #fce8e6; color: #c5221f; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+  .sev-media { background: #fef7e0; color: #b8860b; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+  .sev-bassa { background: #e6f4ea; color: #137333; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+
+  /* MODERATION PANEL */
+  .mod-layout { display: grid; grid-template-columns: 1fr 380px; gap: 20px; }
+  .mod-queue { background: white; border-radius: 12px; border: 1px solid #DADCE0; overflow: hidden; }
+  .mod-queue-header { padding: 14px 18px; border-bottom: 1px solid #DADCE0; display: flex; align-items: center; justify-content: space-between; }
+  .mod-item { padding: 14px 16px; border-bottom: 1px solid #f1f3f4; cursor: pointer; transition: background .1s; }
+  .mod-item:hover { background: #f8f9fa; }
+  .mod-item.selected { background: #e8f0fe; border-left: 3px solid #1A73E8; }
+  .mod-item-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+  .mod-item-text { font-size: 13px; color: #202124; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .mod-item-meta { font-size: 11px; color: #9AA0A6; margin-top: 6px; }
+  .score-bar { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .score-label { font-size: 10px; color: #5F6368; font-weight: 600; }
+  .score-track { flex: 1; height: 4px; background: #e8eaed; border-radius: 2px; }
+  .score-fill { height: 100%; border-radius: 2px; }
+
+  /* DETAIL PANEL */
+  .mod-detail { background: white; border-radius: 12px; border: 1px solid #DADCE0; padding: 20px; }
+  .detail-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #f1f3f4; }
+  .detail-section:last-child { border-bottom: none; margin-bottom: 0; }
+  .detail-label { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #5F6368; letter-spacing: .4px; margin-bottom: 6px; }
+  .detail-value { font-size: 13px; color: #202124; line-height: 1.5; }
+  .media-thumb { width: 100%; height: 140px; background: #e8eaed; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+  .action-buttons { display: flex; gap: 8px; }
+  textarea.mod-note { width: 100%; padding: 8px 10px; border: 1px solid #DADCE0; border-radius: 8px; font-size: 13px; resize: none; height: 70px; font-family: inherit; }
+  .map-mini { background: linear-gradient(135deg, #d4e6f1, #85c1e9); border-radius: 8px; height: 90px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #1A73E8; font-weight: 600; }
+
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+</style>
+</head>
+<body>
+
+<div class="admin-shell">
+
+  <!-- SIDEBAR -->
+  <div class="admin-nav">
+    <div class="admin-logo">
+      <div class="admin-logo-dot">⚡</div>
+      Admin Panel
+    </div>
+
+    <div class="admin-section-label">Monitoraggio</div>
+    <div class="admin-nav-item active">📊 Dashboard</div>
+    <div class="admin-nav-item">🗺 Mappa live</div>
+
+    <div class="admin-section-label">Contenuti</div>
+    <div class="admin-nav-item">📌 Eventi <span class="badge-count">3</span></div>
+    <div class="admin-nav-item">📸 Segnalazioni <span class="badge-count">7</span></div>
+    <div class="admin-nav-item">📰 Editoriali</div>
+    <div class="admin-nav-item">🏷️ Sponsor</div>
+
+    <div class="admin-section-label">Alert</div>
+    <div class="admin-nav-item">🔔 Simula push</div>
+    <div class="admin-nav-item">📋 Audit log</div>
+
+    <div style="margin-top:auto;padding:16px 20px;border-top:1px solid rgba(255,255,255,.1)">
+      <div style="font-size:12px;color:rgba(255,255,255,.5)">Admin: mario@es.it</div>
+      <div style="font-size:12px;color:#8ab4f8;cursor:pointer;margin-top:4px">Logout</div>
+    </div>
+  </div>
+
+  <!-- CONTENT AREA -->
+  <div class="admin-content">
+
+    <!-- DASHBOARD VIEW -->
+    <div id="view-dashboard">
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-page-title">Dashboard</div>
+          <div class="admin-page-sub">Lunedì 23 marzo 2026 · Ultimo aggiornamento: 3 min fa</div>
+        </div>
+        <button class="btn btn-primary">+ Crea evento manuale</button>
+      </div>
+
+      <!-- KPI -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Eventi attivi</div>
+          <div class="kpi-value" style="color:#EA4335">5</div>
+          <div class="kpi-trend-danger">↑ +2 rispetto a ieri</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Segnalazioni in coda</div>
+          <div class="kpi-value" style="color:#FBBC05">7</div>
+          <div class="kpi-trend-warn">3 nuove · 4 in verifica</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Feed ingestiti oggi</div>
+          <div class="kpi-value" style="color:#1A73E8">142</div>
+          <div class="kpi-trend-up">↑ Ultimo run: 3 min fa</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Subscriber alert</div>
+          <div class="kpi-value">1.247</div>
+          <div class="kpi-trend-up">↑ +34 questa settimana</div>
+        </div>
+      </div>
+
+      <!-- TWO COL -->
+      <div class="two-col">
+
+        <!-- EVENTI RECENTI -->
+        <div class="data-table">
+          <div class="table-header">
+            <div style="font-size:14px;font-weight:700">Eventi recenti</div>
+            <a style="font-size:13px;color:#1A73E8;font-weight:600;cursor:pointer">Gestisci tutti →</a>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Titolo</th>
+                <th>Sev.</th>
+                <th>Stato</th>
+                <th>Ore fa</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Terremoto M 4.1 — Catania</td>
+                <td><span class="sev-alta">Alta</span></td>
+                <td><span class="status status-attivo">Attivo</span></td>
+                <td>0.2h</td>
+              </tr>
+              <tr>
+                <td>Allerta meteo gialla PA/TP</td>
+                <td><span class="sev-media">Media</span></td>
+                <td><span class="status status-attivo">Attivo</span></td>
+                <td>1h</td>
+              </tr>
+              <tr>
+                <td>Attività Etna — Cratere SE</td>
+                <td><span class="sev-alta">Alta</span></td>
+                <td><span class="status status-attivo">Attivo</span></td>
+                <td>3h</td>
+              </tr>
+              <tr>
+                <td>Rallentamenti A19 km 145</td>
+                <td><span class="sev-bassa">Bassa</span></td>
+                <td><span class="status status-chiuso">Chiuso</span></td>
+                <td>5h</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- SEGNALAZIONI IN CODA -->
+        <div class="data-table">
+          <div class="table-header">
+            <div style="font-size:14px;font-weight:700">Segnalazioni da moderare</div>
+            <a style="font-size:13px;color:#1A73E8;font-weight:600;cursor:pointer">Modera tutte →</a>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Testo</th>
+                <th>Score</th>
+                <th>Stato</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="max-width:180px">Ho visto fumo nero verso l'Etna dal…</td>
+                <td><span style="color:#34A853;font-weight:700">82</span></td>
+                <td><span class="status status-nuovo">Nuovo</span></td>
+              </tr>
+              <tr>
+                <td style="max-width:180px">Strada allagata in via Roma, Palermo…</td>
+                <td><span style="color:#FBBC05;font-weight:700">61</span></td>
+                <td><span class="status status-verifica">Verifica</span></td>
+              </tr>
+              <tr>
+                <td style="max-width:180px">Frana sulla SS 120 prima di Nicosia…</td>
+                <td><span style="color:#34A853;font-weight:700">74</span></td>
+                <td><span class="status status-nuovo">Nuovo</span></td>
+              </tr>
+              <tr>
+                <td style="max-width:180px">Odore di gas in centro a Catania…</td>
+                <td><span style="color:#EA4335;font-weight:700">29</span></td>
+                <td><span class="status status-verifica">Verifica</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEPARATORE -->
+    <div style="margin:32px 0;border-top:2px dashed #DADCE0;padding-top:24px">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#9AA0A6;letter-spacing:.6px;margin-bottom:20px">▼ Vista: Moderazione Segnalazioni (/admin/segnalazioni)</div>
+
+      <div class="admin-topbar">
+        <div>
+          <div class="admin-page-title">Segnalazioni lettori</div>
+          <div class="admin-page-sub">7 in coda · 3 nuove · 4 in verifica</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-outline btn-sm">Filtra</button>
+          <button class="btn btn-primary btn-sm">Ordina per score ↓</button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active">Tutte (7)</div>
+        <div class="tab">Nuovo (3)</div>
+        <div class="tab">In verifica (4)</div>
+        <div class="tab">Approvate</div>
+        <div class="tab">Rifiutate</div>
+      </div>
+
+      <div class="mod-layout">
+
+        <!-- QUEUE -->
+        <div class="mod-queue">
+          <div class="mod-queue-header">
+            <div style="font-size:13px;font-weight:700">Coda moderazione</div>
+            <input class="search-input" placeholder="🔍 Cerca..." style="width:160px">
+          </div>
+
+          <div class="mod-item selected">
+            <div class="mod-item-top">
+              <span class="status status-nuovo">Nuovo</span>
+              <span style="font-size:11px;color:#9AA0A6">2 min fa · 📍 Catania</span>
+            </div>
+            <div class="mod-item-text">Ho visto fumo nero denso verso l'Etna dal quartiere Librino, sembra diverso dal solito. Allego foto.</div>
+            <div class="score-bar">
+              <span class="score-label">Score: 82</span>
+              <div class="score-track"><div class="score-fill" style="width:82%;background:#34A853"></div></div>
+            </div>
+            <div class="mod-item-meta">📷 1 foto · Posizione verificata · Anonimo</div>
+          </div>
+
+          <div class="mod-item">
+            <div class="mod-item-top">
+              <span class="status status-verifica">In verifica</span>
+              <span style="font-size:11px;color:#9AA0A6">18 min fa · 📍 Palermo</span>
+            </div>
+            <div class="mod-item-text">Strada allagata in via Roma angolo via Maqueda. L'acqua arriva alle caviglie, auto bloccate.</div>
+            <div class="score-bar">
+              <span class="score-label">Score: 61</span>
+              <div class="score-track"><div class="score-fill" style="width:61%;background:#FBBC05"></div></div>
+            </div>
+            <div class="mod-item-meta">📷 2 foto · Posizione non fornita · mario.r</div>
+          </div>
+
+          <div class="mod-item">
+            <div class="mod-item-top">
+              <span class="status status-nuovo">Nuovo</span>
+              <span style="font-size:11px;color:#9AA0A6">31 min fa · 📍 Enna</span>
+            </div>
+            <div class="mod-item-text">Frana sulla SS 120 prima dell'uscita Nicosia. La carreggiata è parzialmente ostruita da massi.</div>
+            <div class="score-bar">
+              <span class="score-label">Score: 74</span>
+              <div class="score-track"><div class="score-fill" style="width:74%;background:#34A853"></div></div>
+            </div>
+            <div class="mod-item-meta">Nessun media · Posizione verificata · Anonimo</div>
+          </div>
+
+          <div class="mod-item">
+            <div class="mod-item-top">
+              <span class="status status-verifica">In verifica</span>
+              <span style="font-size:11px;color:#9AA0A6">1h fa · 📍 Catania</span>
+            </div>
+            <div class="mod-item-text">Odore di gas forte in centro a Catania, zona piazza Stesicoro. Qualcuno ha già chiamato i vigili?</div>
+            <div class="score-bar">
+              <span class="score-label">Score: 29</span>
+              <div class="score-track"><div class="score-fill" style="width:29%;background:#EA4335"></div></div>
+            </div>
+            <div class="mod-item-meta">Nessun media · Nessuna posizione · Anonimo</div>
+          </div>
+        </div>
+
+        <!-- DETAIL -->
+        <div class="mod-detail">
+          <div style="font-size:14px;font-weight:700;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid #f1f3f4">
+            Dettaglio segnalazione #1042
+          </div>
+
+          <div class="detail-section">
+            <div class="detail-label">Testo inviato</div>
+            <div class="detail-value">Ho visto fumo nero denso verso l'Etna dal quartiere Librino, sembra diverso dal solito. Allego foto.</div>
+          </div>
+
+          <div class="detail-section">
+            <div class="detail-label">Media allegato</div>
+            <div class="media-thumb">📷</div>
+          </div>
+
+          <div class="detail-section">
+            <div class="detail-label">Posizione</div>
+            <div class="map-mini">📍 37.4892° N, 15.0711° E · Catania - Librino</div>
+          </div>
+
+          <div class="detail-section">
+            <div class="detail-label">Score affidabilità</div>
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="font-size:24px;font-weight:700;color:#34A853">82/100</div>
+              <div style="font-size:12px;color:#5F6368;line-height:1.5">
+                ✓ Posizione verificata<br/>
+                ✓ Media allegato<br/>
+                ✓ Primo invio da questo IP<br/>
+                ✗ Utente anonimo (–10)
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-section">
+            <div class="detail-label">Collega a evento esistente</div>
+            <select style="width:100%;padding:8px;border:1px solid #DADCE0;border-radius:8px;font-size:13px;color:#202124">
+              <option>— Nessun collegamento —</option>
+              <option selected>🌋 Attività Etna — Cratere Sud-Est (attivo)</option>
+              <option>🌋 Terremoto M 4.1 — Catania</option>
+            </select>
+          </div>
+
+          <div class="detail-section">
+            <div class="detail-label">Nota moderazione</div>
+            <textarea class="mod-note" placeholder="Aggiungi una motivazione (visibile internamente)…">Fumo coerente con attività Etna segnalata da INGV-OE. Foto autentica.</textarea>
+          </div>
+
+          <div class="action-buttons">
+            <button class="btn btn-success" style="flex:1">✓ Approva</button>
+            <button class="btn btn-danger" style="flex:1">✗ Rifiuta</button>
+          </div>
+
+          <div style="margin-top:10px;text-align:center">
+            <button class="btn btn-outline btn-sm" style="width:100%">⏳ Metti In verifica</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,102 @@
+<h2>Architettura — Emergenza Sicilia</h2>
+<p class="subtitle">Stack completo MVP · Sezione 1 di 5</p>
+
+<div class="section">
+  <h3>Infrastruttura</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-top:12px">
+
+    <div style="background:#f0f4ff;border-radius:12px;padding:16px;border:2px solid #1A73E8">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#1A73E8;margin-bottom:8px">▶ VERCEL (free)</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:6px">Next.js 14 App Router</div>
+      <ul style="font-size:12px;color:#444;margin:0;padding-left:16px;line-height:1.8">
+        <li>Frontend (React + Tailwind)</li>
+        <li>API Routes (backend)</li>
+        <li>NextAuth v5 (auth)</li>
+        <li>Admin Panel (/admin/*)</li>
+        <li>Endpoint ingestion protetto</li>
+      </ul>
+    </div>
+
+    <div style="background:#f0fff4;border-radius:12px;padding:16px;border:2px solid #34A853">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#34A853;margin-bottom:8px">▶ NEON (free)</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:6px">PostgreSQL + Prisma</div>
+      <ul style="font-size:12px;color:#444;margin:0;padding-left:16px;line-height:1.8">
+        <li>Event (emergenze)</li>
+        <li>SourceItem (feed ingestiti)</li>
+        <li>Report (segnalazioni)</li>
+        <li>AlertRule (preferenze utenti)</li>
+        <li>EditorialPost (cache WP)</li>
+        <li>SponsorBanner</li>
+        <li>AuditLog</li>
+      </ul>
+    </div>
+
+    <div style="background:#fff8f0;border-radius:12px;padding:16px;border:2px solid #FBBC05">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#b8860b;margin-bottom:8px">▶ GITHUB ACTIONS (free)</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:6px">Ingestion Scheduler</div>
+      <ul style="font-size:12px;color:#444;margin:0;padding-left:16px;line-height:1.8">
+        <li>Cron ogni 15 min</li>
+        <li>Chiama POST /api/ingest</li>
+        <li>Secret token di protezione</li>
+        <li>INGV feed terremoti ✓</li>
+        <li>Protezione Civile RSS ✓</li>
+        <li>ANAS RSS ✓</li>
+      </ul>
+    </div>
+
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px">
+  <h3>Fonti esterne</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px;margin-top:12px">
+
+    <div style="background:#fafafa;border-radius:8px;padding:12px;border:1px solid #DADCE0;text-align:center">
+      <div style="font-size:22px;margin-bottom:4px">🌋</div>
+      <div style="font-size:12px;font-weight:600">INGV</div>
+      <div style="font-size:11px;color:#5F6368">GeoJSON API<br/>terremoti + Etna</div>
+      <div style="margin-top:6px;padding:2px 8px;background:#d4edda;border-radius:20px;font-size:10px;font-weight:700;color:#155724;display:inline-block">REALE</div>
+    </div>
+
+    <div style="background:#fafafa;border-radius:8px;padding:12px;border:1px solid #DADCE0;text-align:center">
+      <div style="font-size:22px;margin-bottom:4px">🛡️</div>
+      <div style="font-size:12px;font-weight:600">Protezione Civile</div>
+      <div style="font-size:11px;color:#5F6368">RSS/GeoJSON<br/>allerte meteo</div>
+      <div style="margin-top:6px;padding:2px 8px;background:#d4edda;border-radius:20px;font-size:10px;font-weight:700;color:#155724;display:inline-block">REALE</div>
+    </div>
+
+    <div style="background:#fafafa;border-radius:8px;padding:12px;border:1px solid #DADCE0;text-align:center">
+      <div style="font-size:22px;margin-bottom:4px">🚗</div>
+      <div style="font-size:12px;font-weight:600">ANAS</div>
+      <div style="font-size:11px;color:#5F6368">RSS traffico<br/>e incidenti</div>
+      <div style="margin-top:6px;padding:2px 8px;background:#d4edda;border-radius:20px;font-size:10px;font-weight:700;color:#155724;display:inline-block">REALE</div>
+    </div>
+
+    <div style="background:#fafafa;border-radius:8px;padding:12px;border:1px solid #DADCE0;text-align:center">
+      <div style="font-size:22px;margin-bottom:4px">📝</div>
+      <div style="font-size:12px;font-weight:600">WordPress.com</div>
+      <div style="font-size:11px;color:#5F6368">REST API<br/>editoriali</div>
+      <div style="margin-top:6px;padding:2px 8px;background:#d4edda;border-radius:20px;font-size:10px;font-weight:700;color:#155724;display:inline-block">REALE</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px">
+  <h3>Flusso dati principale</h3>
+  <div style="background:#f8f9fa;border-radius:8px;padding:16px;font-size:13px;line-height:2;border:1px solid #DADCE0">
+    <span style="background:#1A73E8;color:white;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">GitHub Actions (ogni 15 min)</span>
+    → <code style="background:#eee;padding:2px 4px;border-radius:3px">POST /api/ingest?secret=TOKEN</code>
+    → <span style="background:#34A853;color:white;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">Ingestion Service</span>
+    → deduplica per hash → salva <code style="background:#eee;padding:2px 4px;border-radius:3px">SourceItem</code> + <code style="background:#eee;padding:2px 4px;border-radius:3px">Event</code> su Neon
+    <br/>
+    <span style="background:#FBBC05;color:#000;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">Utente apre app</span>
+    → Next.js legge da Neon → UI aggiornata
+    <br/>
+    <span style="background:#EA4335;color:white;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700">Admin crea evento manuale</span>
+    → <code style="background:#eee;padding:2px 4px;border-radius:3px">POST /api/admin/events</code>
+    → Neon → trigger notifica push (VAPID)
+  </div>
+</div>
+
+<p style="margin-top:24px;font-size:13px;color:#5F6368;text-align:center">Ti sembra corretto? Conferma e passiamo alla sezione 2: Schema DB</p>

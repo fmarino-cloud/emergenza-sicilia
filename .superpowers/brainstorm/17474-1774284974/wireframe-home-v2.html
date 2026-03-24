@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe Homepage v2 — Emergenza Sicilia</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', -apple-system, sans-serif; background: #f1f3f4; color: #202124; }
+
+  .topbar {
+    background: #fff;
+    border-bottom: 1px solid #DADCE0;
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 18px; }
+  .logo-dot { width: 28px; height: 28px; background: #EA4335; border-radius: 6px; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px; font-weight: 800; }
+  .nav { display: flex; gap: 4px; }
+  .nav a { padding: 6px 12px; border-radius: 20px; font-size: 14px; color: #5F6368; text-decoration: none; font-weight: 500; cursor: pointer; }
+  .nav a.active { color: #1A73E8; background: #e8f0fe; }
+  .topbar-actions { display: flex; align-items: center; gap: 8px; }
+  .lang-chip { padding: 4px 10px; border-radius: 20px; border: 1px solid #DADCE0; font-size: 12px; font-weight: 600; color: #5F6368; cursor: pointer; }
+  .btn-alert { padding: 6px 16px; border-radius: 20px; background: #1A73E8; color: white; font-size: 13px; font-weight: 600; border: none; cursor: pointer; }
+
+  .hero {
+    background: linear-gradient(135deg, #1A73E8 0%, #0d47a1 100%);
+    padding: 32px 24px 28px;
+    color: white;
+  }
+  .hero-inner { max-width: 1200px; margin: 0 auto; }
+  .hero-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; opacity: .8; margin-bottom: 6px; }
+  .hero-title { font-size: 28px; font-weight: 700; margin-bottom: 4px; }
+  .hero-sub { font-size: 14px; opacity: .85; margin-bottom: 20px; }
+  .status-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .status-chip { display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.3); border-radius: 20px; padding: 5px 12px; font-size: 13px; font-weight: 600; }
+  .status-chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-red { background: #EA4335; }
+  .dot-yellow { background: #FBBC05; }
+  .dot-green { background: #34A853; }
+  .dot-orange { background: #FF6D00; }
+  .hero-level { margin-top: 16px; background: rgba(255,255,255,.12); border-radius: 12px; padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
+  .level-badge { background: #FBBC05; color: #202124; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 800; text-transform: uppercase; }
+
+  /* LAYOUT: 3 colonne nella zona eventi+sidebar, poi sezione editoriale full-width */
+  .page-wrap { max-width: 1200px; margin: 0 auto; padding: 20px 16px; }
+
+  /* ROW 1: eventi (2fr) + sidebar (1fr) */
+  .row-top { display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .section-title { font-size: 16px; font-weight: 700; }
+  .section-action { font-size: 13px; color: #1A73E8; font-weight: 600; cursor: pointer; }
+
+  .filter-chips { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+  .chip { padding: 5px 14px; border-radius: 20px; font-size: 13px; font-weight: 500; border: 1px solid #DADCE0; background: white; cursor: pointer; color: #5F6368; }
+  .chip.active { background: #e8f0fe; border-color: #1A73E8; color: #1A73E8; font-weight: 600; }
+
+  .event-card { background: white; border-radius: 12px; border: 1px solid #DADCE0; margin-bottom: 10px; overflow: hidden; cursor: pointer; transition: box-shadow .15s, transform .15s; }
+  .event-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); transform: translateY(-1px); }
+  .event-card-inner { padding: 14px 16px; border-left: 4px solid; }
+  .border-alta { border-left-color: #EA4335; }
+  .border-media { border-left-color: #FBBC05; }
+  .border-bassa { border-left-color: #34A853; }
+  .event-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .event-meta { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .badge { padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .badge-alta { background: #fce8e6; color: #EA4335; }
+  .badge-media { background: #fef7e0; color: #b8860b; }
+  .badge-bassa { background: #e6f4ea; color: #137333; }
+  .badge-cat { background: #f1f3f4; color: #5F6368; }
+  .event-time { font-size: 11px; color: #9AA0A6; white-space: nowrap; }
+  .event-title { font-size: 15px; font-weight: 600; margin: 8px 0 4px; line-height: 1.4; }
+  .event-desc { font-size: 13px; color: #5F6368; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .event-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; }
+  .event-source { font-size: 11px; color: #9AA0A6; }
+  .event-location { font-size: 12px; color: #5F6368; }
+
+  .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  /* SIDEBAR */
+  .sidebar { display: flex; flex-direction: column; gap: 14px; }
+  .widget { background: white; border-radius: 12px; border: 1px solid #DADCE0; overflow: hidden; }
+  .widget-header { padding: 12px 16px; border-bottom: 1px solid #DADCE0; display: flex; align-items: center; justify-content: space-between; }
+  .widget-title { font-size: 14px; font-weight: 700; }
+  .widget-body { padding: 12px 16px; }
+
+  .alert-form { display: flex; flex-direction: column; gap: 10px; }
+  .form-label { font-size: 12px; font-weight: 600; color: #5F6368; margin-bottom: 4px; }
+  .form-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .form-chip { padding: 4px 10px; border-radius: 20px; border: 1px solid #DADCE0; font-size: 12px; cursor: pointer; color: #5F6368; }
+  .form-chip.sel { background: #e8f0fe; border-color: #1A73E8; color: #1A73E8; font-weight: 600; }
+  select.form-select { width: 100%; padding: 8px 10px; border: 1px solid #DADCE0; border-radius: 8px; font-size: 13px; color: #202124; background: white; }
+  .btn-primary { width: 100%; padding: 10px; background: #1A73E8; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+
+  .feed-item { padding: 10px 0; border-bottom: 1px solid #f1f3f4; }
+  .feed-item:last-child { border-bottom: none; }
+  .feed-source { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #1A73E8; margin-bottom: 2px; }
+  .feed-title { font-size: 13px; font-weight: 500; line-height: 1.4; }
+  .feed-time { font-size: 11px; color: #9AA0A6; margin-top: 2px; }
+
+  .pwa-banner { background: #e8f0fe; border-radius: 10px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; border: 1px solid #c5d8fb; }
+  .pwa-btn { padding: 6px 12px; background: #1A73E8; color: white; border: none; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+
+  /* ========================================================
+     SEZIONE EDITORIALE — FULL WIDTH, PROMINENTE
+  ======================================================== */
+  .editorial-section {
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 2px solid #DADCE0;
+  }
+  .editorial-section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .editorial-section-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #202124;
+  }
+  .editorial-section-sub {
+    font-size: 14px;
+    color: #5F6368;
+    margin-top: 4px;
+  }
+
+  /* Card featured (grande) */
+  .editorial-featured {
+    background: white;
+    border-radius: 16px;
+    border: 1px solid #DADCE0;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    min-height: 240px;
+    cursor: pointer;
+    transition: box-shadow .15s;
+    margin-bottom: 20px;
+  }
+  .editorial-featured:hover { box-shadow: 0 6px 24px rgba(0,0,0,.1); }
+  .editorial-featured-img {
+    background: linear-gradient(135deg, #1A73E8, #0d47a1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 72px;
+    min-height: 200px;
+  }
+  .editorial-featured-body {
+    padding: 28px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .editorial-featured-type {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #EA4335;
+    letter-spacing: .6px;
+    margin-bottom: 10px;
+  }
+  .editorial-featured-title {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: 12px;
+    color: #202124;
+  }
+  .editorial-featured-summary {
+    font-size: 14px;
+    color: #5F6368;
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .editorial-featured-meta {
+    font-size: 12px;
+    color: #9AA0A6;
+    display: flex;
+    gap: 12px;
+  }
+
+  /* Griglia 3 colonne articoli secondari */
+  .editorial-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .editorial-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #DADCE0;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow .15s, transform .15s;
+  }
+  .editorial-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); transform: translateY(-2px); }
+  .editorial-card-img {
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+  }
+  .img-bg-1 { background: linear-gradient(135deg, #fce8e6, #fbb); }
+  .img-bg-2 { background: linear-gradient(135deg, #e8f5e9, #a5d6a7); }
+  .img-bg-3 { background: linear-gradient(135deg, #fff3e0, #ffcc80); }
+  .editorial-card-body { padding: 14px 16px; }
+  .editorial-card-type { font-size: 10px; font-weight: 700; text-transform: uppercase; color: #1A73E8; margin-bottom: 6px; letter-spacing: .5px; }
+  .editorial-card-title { font-size: 14px; font-weight: 600; line-height: 1.4; color: #202124; margin-bottom: 8px; }
+  .editorial-card-meta { font-size: 11px; color: #9AA0A6; display: flex; align-items: center; justify-content: space-between; }
+  .premium-badge { background: #1A73E8; color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 700; }
+
+  .sponsor-banner { background: #f8f9fa; border-radius: 8px; padding: 12px; border: 1px solid #DADCE0; text-align: center; font-size: 11px; color: #9AA0A6; margin-top: 14px; }
+
+  .snackbar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #202124; color: white; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 500; box-shadow: 0 4px 16px rgba(0,0,0,.2); display: flex; align-items: center; gap: 12px; z-index: 100; }
+  .snackbar-action { color: #8ab4f8; font-weight: 700; cursor: pointer; }
+
+  .footer-note { text-align: center; padding: 24px 16px; font-size: 11px; color: #9AA0A6; }
+</style>
+</head>
+<body>
+
+<!-- TOP APP BAR -->
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-dot">⚡</div>
+    <span>Emergenza<span style="color:#EA4335">Sicilia</span></span>
+  </div>
+  <nav class="nav">
+    <a class="active">Home</a>
+    <a>Mappa</a>
+    <a>Fonti</a>
+    <a>Editoriale</a>
+    <a>Segnala</a>
+  </nav>
+  <div class="topbar-actions">
+    <div class="lang-chip">IT | EN</div>
+    <button class="btn-alert">🔔 Alert</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Aggiornato 3 minuti fa · Sicilia</div>
+    <div class="hero-title">Situazione in tempo reale</div>
+    <div class="hero-sub">Emergenze attive, allerte e criticità sull'isola</div>
+    <div class="status-chips">
+      <div class="status-chip"><div class="dot dot-red"></div>2 Terremoti</div>
+      <div class="status-chip"><div class="dot dot-yellow"></div>1 Allerta Meteo</div>
+      <div class="status-chip"><div class="dot dot-orange"></div>1 Attività Etna</div>
+      <div class="status-chip"><div class="dot dot-green"></div>Traffico nella norma</div>
+    </div>
+    <div class="hero-level">
+      <div class="level-badge">⚠ Attenzione</div>
+      <div style="font-size:13px;opacity:.9">Livello generale: <strong>MEDIO</strong> — Monitorare gli aggiornamenti</div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- ROW TOP: eventi + sidebar -->
+  <div class="row-top">
+
+    <!-- EVENTI -->
+    <div>
+      <div class="filter-chips">
+        <div class="chip active">Tutti (5)</div>
+        <div class="chip">🌋 Terremoto</div>
+        <div class="chip">🌧 Maltempo</div>
+        <div class="chip">🚗 Traffico</div>
+        <div class="chip">🔥 Incendio</div>
+        <div class="chip">🛡️ Allerta PC</div>
+      </div>
+
+      <div class="section-header">
+        <div class="section-title">Eventi attivi</div>
+        <select style="font-size:13px;border:1px solid #DADCE0;border-radius:6px;padding:4px 8px;color:#202124">
+          <option>Più recente</option>
+          <option>Severità</option>
+          <option>Distanza</option>
+        </select>
+      </div>
+
+      <div class="event-card">
+        <div class="event-card-inner border-alta">
+          <div class="event-top">
+            <div class="event-meta">
+              <span class="badge badge-alta">● Alta</span>
+              <span class="badge badge-cat">🌋 Terremoto</span>
+            </div>
+            <span class="event-time">12 min fa</span>
+          </div>
+          <div class="event-title">Terremoto M 4.1 — Costa di Catania</div>
+          <div class="event-desc">Scossa di magnitudo 4.1 a 12 km dalla costa, profondità 10 km. Avvertita in tutta la provincia. Verifiche in corso.</div>
+          <div class="event-footer">
+            <div class="event-source">📡 INGV · Rete Sismica Nazionale</div>
+            <div class="event-location">📍 Catania</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-card-inner border-media">
+          <div class="event-top">
+            <div class="event-meta">
+              <span class="badge badge-media">● Media</span>
+              <span class="badge badge-cat">🌧 Maltempo</span>
+            </div>
+            <span class="event-time">1 ora fa</span>
+          </div>
+          <div class="event-title">Allerta meteo gialla — Province di Palermo e Trapani</div>
+          <div class="event-desc">Allerta gialla per venti forti e mareggiate lungo il litorale nord-occidentale. Raffiche previste fino a 70 km/h.</div>
+          <div class="event-footer">
+            <div class="event-source">🛡️ Protezione Civile Sicilia</div>
+            <div class="event-location">📍 Palermo, Trapani</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event-card">
+        <div class="event-card-inner border-alta">
+          <div class="event-top">
+            <div class="event-meta">
+              <span class="badge badge-alta">● Alta</span>
+              <span class="badge badge-cat">🔴 Eruzione</span>
+            </div>
+            <span class="event-time">3 ore fa</span>
+          </div>
+          <div class="event-title">Attività stromboliana Etna — Cratere Sud-Est</div>
+          <div class="event-desc">Incremento attività stromboliana al cratere Sud-Est. Nube eruttiva 4.500 m. Cenere su settore est. Aeroporto Catania monitorato.</div>
+          <div class="event-footer">
+            <div class="event-source">🌋 INGV-OE Catania</div>
+            <div class="event-location">📍 Etna, Catania</div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:8px">
+        <button style="padding:8px 24px;border:1px solid #DADCE0;border-radius:20px;background:white;font-size:13px;font-weight:600;color:#1A73E8;cursor:pointer">Mostra altri eventi →</button>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="pwa-banner">
+        <div style="font-size:24px">📱</div>
+        <div style="flex:1;font-size:12px;color:#1A73E8;font-weight:500;line-height:1.4">Installa l'app e ricevi alert istantanei</div>
+        <button class="pwa-btn">Installa</button>
+      </div>
+
+      <div class="widget">
+        <div class="widget-header"><div class="widget-title">🔔 Imposta alert rapido</div></div>
+        <div class="widget-body">
+          <div class="alert-form">
+            <div>
+              <div class="form-label">Categorie</div>
+              <div class="form-chips">
+                <div class="form-chip sel">🌋 Terremoto</div>
+                <div class="form-chip sel">🌧 Maltempo</div>
+                <div class="form-chip">🚗 Traffico</div>
+                <div class="form-chip">🔥 Incendio</div>
+              </div>
+            </div>
+            <div>
+              <div class="form-label">Provincia</div>
+              <select class="form-select">
+                <option>Tutte le province</option>
+                <option>Catania</option>
+                <option>Palermo</option>
+                <option>Messina</option>
+              </select>
+            </div>
+            <button class="btn-primary">🔔 Attiva notifiche</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="widget">
+        <div class="widget-header">
+          <div class="widget-title">📡 Ultimi dalle fonti</div>
+          <div class="section-action">Vedi tutte →</div>
+        </div>
+        <div class="widget-body" style="padding:8px 16px">
+          <div class="feed-item">
+            <div class="feed-source">INGV</div>
+            <div class="feed-title">ML 2.1 — Golfo di Patti (ME)</div>
+            <div class="feed-time">5 min fa</div>
+          </div>
+          <div class="feed-item">
+            <div class="feed-source">Protezione Civile</div>
+            <div class="feed-title">Allerta venti: Zona C - costa nord-occidentale</div>
+            <div class="feed-time">58 min fa</div>
+          </div>
+          <div class="feed-item">
+            <div class="feed-source">ANAS</div>
+            <div class="feed-title">SS 115: senso unico alternato km 89</div>
+            <div class="feed-time">2 ore fa</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sponsor-banner">
+        <div style="font-size:9px;color:#bbb;margin-bottom:6px;text-align:right">PUBBLICITÀ</div>
+        <div style="background:#e8eaed;border-radius:6px;height:80px;display:flex;align-items:center;justify-content:center;color:#9AA0A6;font-size:12px">Spazio 300×80</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================
+       SEZIONE EDITORIALE — FULL WIDTH PROMINENTE
+  ====================================================== -->
+  <div class="editorial-section">
+    <div class="editorial-section-header">
+      <div>
+        <div class="editorial-section-title">📰 Editoriale e approfondimenti</div>
+        <div class="editorial-section-sub">Analisi, interviste e contesto dalle nostre redazioni</div>
+      </div>
+      <div class="section-action">Leggi tutto →</div>
+    </div>
+
+    <!-- ARTICOLO IN EVIDENZA (full width, grande) -->
+    <div class="editorial-featured">
+      <div class="editorial-featured-img">🌋</div>
+      <div class="editorial-featured-body">
+        <div class="editorial-featured-type">✦ In evidenza · Approfondimento</div>
+        <div class="editorial-featured-title">Etna 2024: perché l'attività è aumentata e cosa aspettarsi nei prossimi mesi</div>
+        <div class="editorial-featured-summary">L'Etna ha mostrato un incremento significativo dell'attività eruttiva nel 2024. Abbiamo intervistato i vulcanologi dell'INGV-OE per capire cosa sta succedendo e quali scenari sono possibili per i prossimi mesi.</div>
+        <div class="editorial-featured-meta">
+          <span>📖 8 min di lettura</span>
+          <span>🕐 2 ore fa</span>
+          <span>✍ Redazione ES</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRIGLIA 3 ARTICOLI -->
+    <div class="editorial-grid">
+      <div class="editorial-card">
+        <div class="editorial-card-img img-bg-1">🛡️</div>
+        <div class="editorial-card-body">
+          <div class="editorial-card-type">Intervista <span class="premium-badge">PREMIUM</span></div>
+          <div class="editorial-card-title">Il capo della Protezione Civile Sicilia: "Siamo pronti per la stagione dei rischi"</div>
+          <div class="editorial-card-meta">
+            <span>📖 6 min</span>
+            <span>ieri</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="editorial-card">
+        <div class="editorial-card-img img-bg-2">🌧</div>
+        <div class="editorial-card-body">
+          <div class="editorial-card-type">Approfondimento</div>
+          <div class="editorial-card-title">Ciclone Harry: cosa ha insegnato alla Sicilia sulla gestione delle allerte meteo</div>
+          <div class="editorial-card-meta">
+            <span>📖 5 min</span>
+            <span>3 giorni fa</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="editorial-card">
+        <div class="editorial-card-img img-bg-3">🚗</div>
+        <div class="editorial-card-body">
+          <div class="editorial-card-type">Editoriale</div>
+          <div class="editorial-card-title">Viadotti siciliani: lo stato della rete e i cantieri aperti da tenere d'occhio</div>
+          <div class="editorial-card-meta">
+            <span>📖 4 min</span>
+            <span>5 giorni fa</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="snackbar">
+  ✓ Alert attivato per Catania · Terremoto, Maltempo
+  <span class="snackbar-action">Modifica</span>
+</div>
+
+<div class="footer-note">
+  Emergenza Sicilia · Dati da INGV, Protezione Civile, ANAS · Aggiornato ogni 15 minuti · <a href="#" style="color:#1A73E8">Privacy</a>
+</div>
+
+</body>
+</html>

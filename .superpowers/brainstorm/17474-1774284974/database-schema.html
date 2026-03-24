@@ -1,0 +1,112 @@
+<h2>Schema Database — Emergenza Sicilia</h2>
+<p class="subtitle">PostgreSQL + Prisma · Sezione 2 di 5</p>
+
+<div class="section">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
+
+    <!-- Event -->
+    <div style="background:#f0f4ff;border-radius:12px;padding:16px;border:2px solid #1A73E8">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#1A73E8;margin-bottom:8px">📌 EVENT</div>
+      <table style="font-size:12px;width:100%;border-collapse:collapse">
+        <tr><td style="padding:3px 6px;font-weight:600;color:#202124">id</td><td style="color:#5F6368">cuid</td></tr>
+        <tr style="background:#e8eeff"><td style="padding:3px 6px;font-weight:600">title</td><td style="color:#5F6368">String</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">category</td><td style="color:#EA4335;font-weight:600">TERREMOTO | MALTEMPO | TRAFFICO | ERUZIONE | INCENDIO | ALLERTA | TRASPORTI</td></tr>
+        <tr style="background:#e8eeff"><td style="padding:3px 6px;font-weight:600">severity</td><td style="color:#EA4335;font-weight:600">BASSA | MEDIA | ALTA | CRITICA</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">description</td><td style="color:#5F6368">Text</td></tr>
+        <tr style="background:#e8eeff"><td style="padding:3px 6px;font-weight:600">source</td><td style="color:#5F6368">String</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">sourceUrl</td><td style="color:#5F6368">String?</td></tr>
+        <tr style="background:#e8eeff"><td style="padding:3px 6px;font-weight:600">lat / lng</td><td style="color:#5F6368">Float?</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">comune / provincia</td><td style="color:#5F6368">String?</td></tr>
+        <tr style="background:#e8eeff"><td style="padding:3px 6px;font-weight:600">status</td><td style="color:#34A853;font-weight:600">ATTIVO | MONITORAGGIO | CHIUSO</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">tags</td><td style="color:#5F6368">String[]</td></tr>
+        <tr style="background:#e8eeff"><td style="padding:3px 6px;font-weight:600">publishedAt</td><td style="color:#5F6368">DateTime</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">updatedAt</td><td style="color:#5F6368">DateTime</td></tr>
+        <tr style="background:#e8eeff"><td style="padding:3px 6px;font-weight:600">sourceItemId</td><td style="color:#5F6368">→ SourceItem?</td></tr>
+      </table>
+    </div>
+
+    <!-- SourceItem -->
+    <div style="background:#fff8f0;border-radius:12px;padding:16px;border:2px solid #FBBC05">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#b8860b;margin-bottom:8px">📡 SOURCEITEM</div>
+      <table style="font-size:12px;width:100%;border-collapse:collapse">
+        <tr><td style="padding:3px 6px;font-weight:600">id</td><td style="color:#5F6368">cuid</td></tr>
+        <tr style="background:#fff3e0"><td style="padding:3px 6px;font-weight:600">source</td><td style="color:#EA4335;font-weight:600">INGV | PC | ANAS | MANUALE</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">type</td><td style="color:#EA4335;font-weight:600">RSS | API | MANUAL</td></tr>
+        <tr style="background:#fff3e0"><td style="padding:3px 6px;font-weight:600">title</td><td style="color:#5F6368">String</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">text</td><td style="color:#5F6368">Text?</td></tr>
+        <tr style="background:#fff3e0"><td style="padding:3px 6px;font-weight:600">url</td><td style="color:#5F6368">String?</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">publishedAt</td><td style="color:#5F6368">DateTime</td></tr>
+        <tr style="background:#fff3e0"><td style="padding:3px 6px;font-weight:600">hashDedup</td><td style="color:#5F6368">String @unique</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">rawJson</td><td style="color:#5F6368">Json?</td></tr>
+        <tr style="background:#fff3e0"><td style="padding:3px 6px;font-weight:600">createdAt</td><td style="color:#5F6368">DateTime</td></tr>
+      </table>
+
+      <div style="margin-top:16px;border-top:1px solid #DADCE0;padding-top:12px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#b8860b;margin-bottom:8px">🔔 ALERTRULE</div>
+        <table style="font-size:12px;width:100%;border-collapse:collapse">
+          <tr><td style="padding:3px 6px;font-weight:600">id</td><td style="color:#5F6368">cuid</td></tr>
+          <tr style="background:#fff3e0"><td style="padding:3px 6px;font-weight:600">userId</td><td style="color:#5F6368">String? → User</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600">anonSessionId</td><td style="color:#5F6368">String?</td></tr>
+          <tr style="background:#fff3e0"><td style="padding:3px 6px;font-weight:600">categories</td><td style="color:#5F6368">String[]</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600">provinces</td><td style="color:#5F6368">String[]</td></tr>
+          <tr style="background:#fff3e0"><td style="padding:3px 6px;font-weight:600">minSeverity</td><td style="color:#5F6368">Enum</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600">channels</td><td style="color:#5F6368">WEB | PUSH | EMAIL</td></tr>
+          <tr style="background:#fff3e0"><td style="padding:3px 6px;font-weight:600">pushEndpoint</td><td style="color:#5F6368">String? (VAPID)</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600">active</td><td style="color:#5F6368">Boolean</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Report -->
+    <div style="background:#fff0f0;border-radius:12px;padding:16px;border:2px solid #EA4335">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#EA4335;margin-bottom:8px">📸 REPORT (segnalazioni)</div>
+      <table style="font-size:12px;width:100%;border-collapse:collapse">
+        <tr><td style="padding:3px 6px;font-weight:600">id</td><td style="color:#5F6368">cuid</td></tr>
+        <tr style="background:#ffe8e8"><td style="padding:3px 6px;font-weight:600">userId / anonId</td><td style="color:#5F6368">String?</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">text</td><td style="color:#5F6368">Text</td></tr>
+        <tr style="background:#ffe8e8"><td style="padding:3px 6px;font-weight:600">mediaUrls</td><td style="color:#5F6368">String[]</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">lat / lng</td><td style="color:#5F6368">Float?</td></tr>
+        <tr style="background:#ffe8e8"><td style="padding:3px 6px;font-weight:600">status</td><td style="color:#EA4335;font-weight:600">NUOVO | IN_VERIFICA | APPROVATO | RIFIUTATO</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">reliabilityScore</td><td style="color:#5F6368">Int (0-100)</td></tr>
+        <tr style="background:#ffe8e8"><td style="padding:3px 6px;font-weight:600">moderationNote</td><td style="color:#5F6368">String?</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">eventId</td><td style="color:#5F6368">→ Event?</td></tr>
+        <tr style="background:#ffe8e8"><td style="padding:3px 6px;font-weight:600">createdAt</td><td style="color:#5F6368">DateTime</td></tr>
+        <tr><td style="padding:3px 6px;font-weight:600">ipHash</td><td style="color:#5F6368">String (rate limit)</td></tr>
+      </table>
+    </div>
+
+    <!-- Others -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+
+      <div style="background:#f0fff4;border-radius:12px;padding:16px;border:2px solid #34A853">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#34A853;margin-bottom:8px">📰 EDITORIALPOST (cache WP)</div>
+        <table style="font-size:12px;width:100%;border-collapse:collapse">
+          <tr><td style="padding:3px 6px;font-weight:600">id / wpId</td><td style="color:#5F6368">Int (ID WordPress)</td></tr>
+          <tr style="background:#e8f5e9"><td style="padding:3px 6px;font-weight:600">title / slug</td><td style="color:#5F6368">String</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600">summary / content</td><td style="color:#5F6368">Text</td></tr>
+          <tr style="background:#e8f5e9"><td style="padding:3px 6px;font-weight:600">type</td><td style="color:#EA4335;font-weight:600">EDITORIALE | INTERVISTA | APPROFONDIMENTO</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600">paywall</td><td style="color:#EA4335;font-weight:600">FREE | PREMIUM</td></tr>
+          <tr style="background:#e8f5e9"><td style="padding:3px 6px;font-weight:600">featured / publishedAt</td><td style="color:#5F6368">Bool / DateTime</td></tr>
+          <tr><td style="padding:3px 6px;font-weight:600">syncedAt</td><td style="color:#5F6368">DateTime (cache)</td></tr>
+        </table>
+        <div style="font-size:11px;color:#5F6368;margin-top:6px;padding:6px;background:#e8f5e9;border-radius:4px">
+          ⚡ Sincronizzato da WP REST API ogni 30 min via GitHub Actions
+        </div>
+      </div>
+
+      <div style="background:#fafafa;border-radius:12px;padding:16px;border:1px solid #DADCE0">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#5F6368;margin-bottom:8px">🏷️ SPONSORBANNER · 📋 AUDITLOG · 👤 USER</div>
+        <div style="font-size:12px;color:#5F6368;line-height:1.8">
+          <b>SponsorBanner:</b> id, posizione, imageUrl, linkUrl, active, startAt, endAt<br/>
+          <b>AuditLog:</b> id, adminId, action, entityType, entityId, metadata, createdAt<br/>
+          <b>User:</b> id, email, passwordHash, role (ADMIN|USER), isPremium, createdAt<br/>
+          <b>PushSubscription:</b> id, userId?, endpoint, keys (VAPID), createdAt
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<p style="margin-top:20px;font-size:13px;color:#5F6368;text-align:center">Schema DB corretto? Confermami e passo alla sezione 3: Pagine e flussi UI</p>

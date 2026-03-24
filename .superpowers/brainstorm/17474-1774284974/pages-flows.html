@@ -1,0 +1,162 @@
+<h2>Pagine e Flussi UI — Emergenza Sicilia</h2>
+<p class="subtitle">Struttura routing Next.js App Router · Sezione 3 di 5</p>
+
+<div class="section">
+  <h3>Mappa del sito</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
+
+    <!-- Pubblico -->
+    <div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#1A73E8;margin-bottom:10px">🌐 AREA PUBBLICA</div>
+
+      <div style="background:#f8f9fa;border-radius:8px;border:1px solid #DADCE0;overflow:hidden;margin-bottom:8px">
+        <div style="background:#1A73E8;color:white;padding:6px 12px;font-size:12px;font-weight:700">/ — Home "Situazione in tempo reale"</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • Hero: stato attuale (N eventi attivi per categoria + livello generale)<br/>
+          • Lista eventi attivi (ordina: recente | severità | distanza)<br/>
+          • Box ultimi feed ufficiali<br/>
+          • Box editoriale in evidenza (da WP cache)<br/>
+          • Modulo rapido "Imposta alert"
+        </div>
+      </div>
+
+      <div style="background:#f8f9fa;border-radius:8px;border:1px solid #DADCE0;overflow:hidden;margin-bottom:8px">
+        <div style="background:#1A73E8;color:white;padding:6px 12px;font-size:12px;font-weight:700">/mappa — Mappa interattiva</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • Leaflet full-screen con marker cluster<br/>
+          • Sidebar filtri: categoria, severità, data<br/>
+          • Popup marker → scheda evento rapida<br/>
+          • Link "Vedi evento completo"
+        </div>
+      </div>
+
+      <div style="background:#f8f9fa;border-radius:8px;border:1px solid #DADCE0;overflow:hidden;margin-bottom:8px">
+        <div style="background:#1A73E8;color:white;padding:6px 12px;font-size:12px;font-weight:700">/eventi/[id] — Pagina evento</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • Header: titolo, chip categoria+severità, fonte+timestamp<br/>
+          • Mappa mini con pin<br/>
+          • Timeline aggiornamenti<br/>
+          • Segnalazioni verificate collegate<br/>
+          • Editoriali correlati (da WP cache)<br/>
+          • CTA: "Ricevi alert per questa area"
+        </div>
+      </div>
+
+      <div style="background:#f8f9fa;border-radius:8px;border:1px solid #DADCE0;overflow:hidden;margin-bottom:8px">
+        <div style="background:#5F6368;color:white;padding:6px 12px;font-size:12px;font-weight:700">/fonti — Fonti ufficiali</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • Lista fonti configurate con descrizione<br/>
+          • Per ciascuna: ultimi 5 item importati + link originale<br/>
+          • Badge "aggiornato X minuti fa"
+        </div>
+      </div>
+
+      <div style="background:#f8f9fa;border-radius:8px;border:1px solid #DADCE0;overflow:hidden;margin-bottom:8px">
+        <div style="background:#5F6368;color:white;padding:6px 12px;font-size:12px;font-weight:700">/editoriale — Blog editoriale</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • Griglia articoli da WP cache (filtri: tipo, categoria)<br/>
+          • Badge PREMIUM con paywall soft<br/>
+          • /editoriale/[slug] — articolo singolo (SEO + OG)
+        </div>
+      </div>
+
+      <div style="background:#f8f9fa;border-radius:8px;border:1px solid #DADCE0;overflow:hidden;margin-bottom:8px">
+        <div style="background:#5F6368;color:white;padding:6px 12px;font-size:12px;font-weight:700">/segnala — Segnalazione lettori</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • Form: testo + foto/video (Supabase storage) + posizione opt-in<br/>
+          • Progress "In verifica" post-invio<br/>
+          • Rate limit: max 3 invii/ora per IP
+        </div>
+      </div>
+
+      <div style="background:#f8f9fa;border-radius:8px;border:1px solid #DADCE0;overflow:hidden">
+        <div style="background:#5F6368;color:white;padding:6px 12px;font-size:12px;font-weight:700">/alert — Preferenze alert · /premium — Pricing</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • /alert: selettore categorie + provincia + attiva notifiche push<br/>
+          • /premium: pagina pricing freemium/premium (mock checkout)
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin -->
+    <div>
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;color:#EA4335;margin-bottom:10px">🔐 AREA ADMIN (/admin/*)</div>
+
+      <div style="background:#fff8f8;border-radius:8px;border:1px solid #EA4335;overflow:hidden;margin-bottom:8px">
+        <div style="background:#EA4335;color:white;padding:6px 12px;font-size:12px;font-weight:700">/admin — Dashboard</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • KPI: eventi attivi, segnalazioni in coda, ultimi feed<br/>
+          • Quick actions: crea evento, approva segnalazione
+        </div>
+      </div>
+
+      <div style="background:#fff8f8;border-radius:8px;border:1px solid #fccaca;overflow:hidden;margin-bottom:8px">
+        <div style="background:#c0392b;color:white;padding:6px 12px;font-size:12px;font-weight:700">/admin/eventi — Gestione eventi</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • Tabella eventi (filtri, search)<br/>
+          • Crea/modifica evento manuale<br/>
+          • Chiudi/archivia eventi
+        </div>
+      </div>
+
+      <div style="background:#fff8f8;border-radius:8px;border:1px solid #fccaca;overflow:hidden;margin-bottom:8px">
+        <div style="background:#c0392b;color:white;padding:6px 12px;font-size:12px;font-weight:700">/admin/segnalazioni — Moderazione</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • Queue segnalazioni NUOVO/IN_VERIFICA<br/>
+          • Approva / Rifiuta + motivazione<br/>
+          • Collega segnalazione a evento esistente
+        </div>
+      </div>
+
+      <div style="background:#fff8f8;border-radius:8px;border:1px solid #fccaca;overflow:hidden;margin-bottom:8px">
+        <div style="background:#c0392b;color:white;padding:6px 12px;font-size:12px;font-weight:700">/admin/editoriali — Sync WP + paywall</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • Lista articoli sincronizzati da WP<br/>
+          • Toggle paywall FREE/PREMIUM<br/>
+          • Toggle featured<br/>
+          • Force sync manuale
+        </div>
+      </div>
+
+      <div style="background:#fff8f8;border-radius:8px;border:1px solid #fccaca;overflow:hidden;margin-bottom:8px">
+        <div style="background:#c0392b;color:white;padding:6px 12px;font-size:12px;font-weight:700">/admin/sponsor — Banner</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • CRUD banner: posizione, immagine, link, date attività<br/>
+          • Preview posizione
+        </div>
+      </div>
+
+      <div style="background:#fff8f8;border-radius:8px;border:1px solid #fccaca;overflow:hidden;margin-bottom:8px">
+        <div style="background:#c0392b;color:white;padding:6px 12px;font-size:12px;font-weight:700">/admin/alert — Simula push notification</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • Seleziona evento → invia push a tutti i subscriber matching<br/>
+          • Log invii recenti
+        </div>
+      </div>
+
+      <div style="background:#fff8f8;border-radius:8px;border:1px solid #fccaca;overflow:hidden">
+        <div style="background:#c0392b;color:white;padding:6px 12px;font-size:12px;font-weight:700">/admin/audit — Log azioni</div>
+        <div style="padding:10px 12px;font-size:12px;color:#444;line-height:1.8">
+          • Tabella AuditLog con filtri per admin, azione, entità
+        </div>
+      </div>
+
+      <div style="margin-top:16px;background:#f0f4ff;border-radius:8px;padding:12px;border:1px solid #1A73E8">
+        <div style="font-size:11px;font-weight:700;color:#1A73E8;margin-bottom:6px">API ROUTES principali</div>
+        <div style="font-family:monospace;font-size:11px;color:#444;line-height:2">
+          GET  /api/events<br/>
+          POST /api/events (admin)<br/>
+          GET  /api/events/[id]<br/>
+          POST /api/ingest?secret=TOKEN<br/>
+          POST /api/reports<br/>
+          PATCH /api/admin/reports/[id]<br/>
+          GET  /api/editorial<br/>
+          POST /api/alerts/subscribe<br/>
+          POST /api/push/send (admin)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p style="margin-top:20px;font-size:13px;color:#5F6368;text-align:center">Struttura routing corretta? Confermami e passo alla sezione 4: Wireframe Homepage</p>

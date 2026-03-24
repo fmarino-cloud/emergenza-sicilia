@@ -1,0 +1,8 @@
+{"type":"server-started","port":49795,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:49795","screen_dir":"/Users/francescomarino/Desktop/COWORKING/Emergenza Sicilia/.superpowers/brainstorm/17474-1774284974"}
+{"type":"screen-added","file":"/Users/francescomarino/Desktop/COWORKING/Emergenza Sicilia/.superpowers/brainstorm/17474-1774284974/architecture.html"}
+{"type":"screen-added","file":"/Users/francescomarino/Desktop/COWORKING/Emergenza Sicilia/.superpowers/brainstorm/17474-1774284974/database-schema.html"}
+{"type":"screen-added","file":"/Users/francescomarino/Desktop/COWORKING/Emergenza Sicilia/.superpowers/brainstorm/17474-1774284974/pages-flows.html"}
+{"type":"screen-added","file":"/Users/francescomarino/Desktop/COWORKING/Emergenza Sicilia/.superpowers/brainstorm/17474-1774284974/wireframe-home.html"}
+{"type":"screen-added","file":"/Users/francescomarino/Desktop/COWORKING/Emergenza Sicilia/.superpowers/brainstorm/17474-1774284974/wireframe-home-v2.html"}
+{"type":"screen-added","file":"/Users/francescomarino/Desktop/COWORKING/Emergenza Sicilia/.superpowers/brainstorm/17474-1774284974/wireframe-admin.html"}
+{"type":"server-stopped","reason":"idle timeout"}
