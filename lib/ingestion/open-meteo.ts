@@ -21,9 +21,9 @@ const SICILIA_PROVINCES = [
 function wmoToSeverity(code: number): "MEDIA" | "ALTA" | "CRITICA" | null {
   if (code >= 96) return "CRITICA"; // Temporale con grandine intensa
   if (code === 95) return "ALTA";   // Temporale
-  if (code === 82) return "ALTA";   // Rovesci intensi
-  if (code >= 65) return "ALTA";    // Pioggia intensa
-  if (code >= 80) return "MEDIA";   // Rovesci
+  if (code === 82) return "ALTA";   // Rovesci violenti
+  if (code >= 80) return "MEDIA";   // Rovesci leggeri/moderati (80-81) — prima di >= 65
+  if (code >= 65) return "ALTA";    // Pioggia intensa (65-79)
   if (code >= 61) return "MEDIA";   // Pioggia moderata
   if (code >= 55) return "MEDIA";   // Pioviggine intensa
   return null;
