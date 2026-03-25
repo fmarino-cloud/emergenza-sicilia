@@ -47,6 +47,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
+    authorized() {
+      return true; // disable NextAuth auto-redirect; handled manually in middleware
+    },
     async jwt({ token, user }) {
       if (user) {
         token.role = (user as any).role;
