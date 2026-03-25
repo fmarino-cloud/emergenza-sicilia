@@ -39,7 +39,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.role = (user as any).role;
         token.isPremium = (user as any).isPremium;
-        token.id = user.id;
+        token.id = user.id ?? "";
       }
       return token;
     },
