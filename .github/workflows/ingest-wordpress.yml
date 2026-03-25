@@ -1,0 +1,17 @@
+name: Sync WordPress editoriali (ogni 30 min)
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+jobs:
+  sync-wp:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Sync WordPress.com posts
+        run: |
+          curl -f -X POST \
+            -H "x-ingest-secret: ${{ secrets.INGEST_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/ingest/wordpress"

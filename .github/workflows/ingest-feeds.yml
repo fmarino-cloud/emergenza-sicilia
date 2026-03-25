@@ -1,0 +1,17 @@
+name: Ingest feeds (ogni 15 min)
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger feed ingestion
+        run: |
+          curl -f -X POST \
+            -H "x-ingest-secret: ${{ secrets.INGEST_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/ingest"
