@@ -1,0 +1,96 @@
+{
+  "nav": {
+    "home": "Home",
+    "map": "Map",
+    "events": "Events",
+    "sources": "Sources",
+    "editorial": "Editorial",
+    "reports": "Report",
+    "alerts": "Alerts",
+    "premium": "Premium"
+  },
+  "home": {
+    "hero_title": "Emergencies in Sicily",
+    "hero_subtitle": "Official real-time information on earthquakes, storms, fires and alerts",
+    "events_title": "Latest events",
+    "editorial_title": "Editorial",
+    "alert_cta": "Get alerts",
+    "alert_cta_subtitle": "Push notifications for your province"
+  },
+  "events": {
+    "category": {
+      "TERREMOTO": "Earthquake",
+      "MALTEMPO": "Storm",
+      "INCENDIO": "Fire",
+      "TRAFFICO": "Traffic",
+      "ALLERTA": "Alert",
+      "ERUZIONE": "Eruption",
+      "ALTRO": "Other"
+    },
+    "severity": {
+      "BASSA": "Low",
+      "MEDIA": "Medium",
+      "ALTA": "High",
+      "CRITICA": "Critical"
+    },
+    "status": {
+      "APERTO": "Open",
+      "IN_AGGIORNAMENTO": "Updating",
+      "CHIUSO": "Closed"
+    }
+  },
+  "reports": {
+    "title": "Report an emergency",
+    "subtitle": "Contribute with verifiable information from your area",
+    "text_label": "Description",
+    "text_placeholder": "Describe what is happening...",
+    "category_label": "Category",
+    "province_label": "Province",
+    "location_button": "Use my location",
+    "media_label": "Photo/Video (optional)",
+    "submit": "Submit report",
+    "success": "Your report is under review — thank you for contributing!",
+    "rate_limit": "You have reached the report limit. Try again in an hour."
+  },
+  "alerts": {
+    "title": "Get real-time alerts",
+    "subtitle": "Customize push notifications for emergencies that affect you",
+    "provinces_label": "Provinces",
+    "categories_label": "Categories",
+    "severity_label": "Minimum severity threshold",
+    "subscribe_button": "Enable notifications",
+    "success": "Alerts activated successfully!",
+    "permission_denied": "Notification permission denied. Enable notifications in your browser settings."
+  },
+  "map": {
+    "title": "Emergency map",
+    "subtitle": "Geographic visualization of active events in Sicily"
+  },
+  "sources": {
+    "title": "Official sources",
+    "subtitle": "Real-time data from INGV, Civil Protection and ANAS"
+  },
+  "editorial": {
+    "title": "Editorial",
+    "subtitle": "Analysis, guides and official communications",
+    "premium_wall": "Premium Content",
+    "premium_wall_sub": "Subscribe to read the full article"
+  },
+  "footer": {
+    "tagline": "Emergency information for Sicily",
+    "links": "Useful links",
+    "legal": "Legal",
+    "privacy": "Privacy",
+    "contact": "Contact"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "retry": "Retry",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "ago": "ago",
+    "just_now": "Just now"
+  }
+}

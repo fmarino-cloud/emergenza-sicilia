@@ -1,0 +1,96 @@
+{
+  "nav": {
+    "home": "Home",
+    "map": "Mappa",
+    "events": "Eventi",
+    "sources": "Fonti",
+    "editorial": "Editoriale",
+    "reports": "Segnala",
+    "alerts": "Allerte",
+    "premium": "Premium"
+  },
+  "home": {
+    "hero_title": "Emergenze in Sicilia",
+    "hero_subtitle": "Informazioni ufficiali in tempo reale su terremoti, maltempo, incendi e allerte",
+    "events_title": "Ultimi eventi",
+    "editorial_title": "Editoriale",
+    "alert_cta": "Ricevi allerte",
+    "alert_cta_subtitle": "Notifiche push per la tua provincia"
+  },
+  "events": {
+    "category": {
+      "TERREMOTO": "Terremoto",
+      "MALTEMPO": "Maltempo",
+      "INCENDIO": "Incendio",
+      "TRAFFICO": "Traffico",
+      "ALLERTA": "Allerta",
+      "ERUZIONE": "Eruzione",
+      "ALTRO": "Altro"
+    },
+    "severity": {
+      "BASSA": "Bassa",
+      "MEDIA": "Media",
+      "ALTA": "Alta",
+      "CRITICA": "Critica"
+    },
+    "status": {
+      "APERTO": "Aperto",
+      "IN_AGGIORNAMENTO": "In aggiornamento",
+      "CHIUSO": "Chiuso"
+    }
+  },
+  "reports": {
+    "title": "Segnala un'emergenza",
+    "subtitle": "Contribuisci con informazioni verificabili dalla tua zona",
+    "text_label": "Descrizione",
+    "text_placeholder": "Descrivi cosa sta succedendo...",
+    "category_label": "Categoria",
+    "province_label": "Provincia",
+    "location_button": "Usa la mia posizione",
+    "media_label": "Foto/Video (opzionale)",
+    "submit": "Invia segnalazione",
+    "success": "La tua segnalazione è in verifica — grazie per contribuire!",
+    "rate_limit": "Hai raggiunto il limite di segnalazioni. Riprova tra un'ora."
+  },
+  "alerts": {
+    "title": "Ricevi allerte in tempo reale",
+    "subtitle": "Personalizza le notifiche push per le emergenze che ti riguardano",
+    "provinces_label": "Province",
+    "categories_label": "Categorie",
+    "severity_label": "Soglia minima di gravità",
+    "subscribe_button": "Attiva notifiche",
+    "success": "Allerte attivate con successo!",
+    "permission_denied": "Permesso notifiche negato. Abilita le notifiche nelle impostazioni del browser."
+  },
+  "map": {
+    "title": "Mappa emergenze",
+    "subtitle": "Visualizzazione geografica degli eventi attivi in Sicilia"
+  },
+  "sources": {
+    "title": "Fonti ufficiali",
+    "subtitle": "Dati in tempo reale da INGV, Protezione Civile e ANAS"
+  },
+  "editorial": {
+    "title": "Editoriale",
+    "subtitle": "Approfondimenti, guide e comunicati ufficiali",
+    "premium_wall": "Contenuto Premium",
+    "premium_wall_sub": "Abbonati per leggere l'articolo completo"
+  },
+  "footer": {
+    "tagline": "Informazione di emergenza per la Sicilia",
+    "links": "Link utili",
+    "legal": "Note legali",
+    "privacy": "Privacy",
+    "contact": "Contatti"
+  },
+  "common": {
+    "loading": "Caricamento...",
+    "error": "Si è verificato un errore",
+    "retry": "Riprova",
+    "close": "Chiudi",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "ago": "fa",
+    "just_now": "Adesso"
+  }
+}
