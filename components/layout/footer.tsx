@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from "next/image";
 
 export function Footer() {
   return (
@@ -7,13 +6,10 @@ export function Footer() {
       <div className="mx-auto max-w-content px-4 py-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div className="md:col-span-1">
-            <Image
-              src="/logo_emergenza_sicilia.png"
-              alt="Emergenza Sicilia"
-              width={150}
-              height={38}
-              className="h-8 w-auto brightness-0 invert mb-3"
-            />
+            <div className="mb-3">
+              <span className="font-heading font-bold text-white text-xl">Emergenza</span>
+              <span className="font-heading font-bold text-es-yellow text-xl"> Sicilia</span>
+            </div>
             <p className="text-white/60 text-sm font-body leading-relaxed">
               Informazione in tempo reale sulle emergenze in Sicilia.
             </p>

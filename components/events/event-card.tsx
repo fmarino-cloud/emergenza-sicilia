@@ -24,6 +24,16 @@ const CATEGORY_LABELS: Record<string, string> = {
   TRASPORTI: "Trasporti",
 };
 
+const CATEGORY_ICONS: Record<string, string> = {
+  TERREMOTO: "🔴",
+  MALTEMPO:  "🌧️",
+  TRAFFICO:  "🚗",
+  ERUZIONE:  "🌋",
+  INCENDIO:  "🔥",
+  ALLERTA:   "⚠️",
+  TRASPORTI: "🚂",
+};
+
 const SEVERITY_BORDER: Record<string, string> = {
   BASSA:   "border-l-es-green",
   MEDIA:   "border-l-es-yellow",
@@ -49,13 +59,14 @@ export function EventCard({ id, title, category, severity, description, source, 
     >
       <article
         className={cn(
-          "bg-es-bg rounded-card border-l-4 p-4 hover:shadow-md transition-shadow duration-150 cursor-pointer",
+          "bg-white rounded-card border border-es-border border-l-[6px] p-5 shadow-sm hover:shadow-md transition-shadow duration-150 cursor-pointer",
           SEVERITY_BORDER[severity]
         )}
       >
         <div className="flex items-start justify-between gap-2 mb-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="bg-es-blue/10 text-es-blue text-xs font-heading font-semibold px-2 py-0.5 rounded-chip">
+            <span className="bg-es-blue/10 text-es-blue text-xs font-heading font-semibold px-2 py-0.5 rounded-chip inline-flex items-center gap-1">
+              <span aria-hidden="true">{CATEGORY_ICONS[category]}</span>
               {CATEGORY_LABELS[category] ?? category}
             </span>
             <SeverityBadge severity={severity} />
@@ -71,21 +82,23 @@ export function EventCard({ id, title, category, severity, description, source, 
             )}
           </div>
           {provincia && (
-            <span className="text-xs text-es-text-secondary font-body shrink-0">{provincia}</span>
+            <span className="text-xs text-es-text-secondary font-body shrink-0 bg-es-bg px-2 py-0.5 rounded">
+              📍 {provincia}
+            </span>
           )}
         </div>
 
-        <h3 className="font-heading font-semibold text-base text-es-text mb-1 line-clamp-2 leading-snug">
+        <h3 className="font-heading font-semibold text-base text-es-text mb-2 line-clamp-2 leading-snug">
           {title}
         </h3>
 
-        <p className="text-es-text-secondary text-sm font-body line-clamp-2 mb-3 leading-relaxed">
+        <p className="text-es-text-secondary text-sm font-body line-clamp-2 mb-4 leading-relaxed">
           {description}
         </p>
 
         <div className="flex items-center justify-between text-xs text-es-text-secondary font-body">
-          <span>Fonte: <span className="font-medium">{source}</span></span>
-          <time dateTime={publishedAt}>{formatTimeAgo(publishedAt)}</time>
+          <span>Fonte: <span className="font-medium text-es-text">{source}</span></span>
+          <time dateTime={publishedAt} className="font-medium">{formatTimeAgo(publishedAt)}</time>
         </div>
       </article>
     </Link>

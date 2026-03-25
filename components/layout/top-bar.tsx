@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -17,47 +18,56 @@ const navLinks = [
 export function TopBar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const stripped = pathname.replace(/^\/(it|en)/, "") || "/";
 
   return (
-    <header className="sticky top-0 z-50 bg-es-blue shadow-md" role="banner">
-      <div className="mx-auto max-w-content flex items-center justify-between px-4 h-14">
+    <header className="sticky top-0 z-50 bg-white border-b-[3px] border-es-blue shadow-sm" role="banner">
+      <div className="mx-auto max-w-content flex items-center justify-between px-4 h-16">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-1 shrink-0" aria-label="Emergenza Sicilia - Home">
-          <span className="font-heading font-bold text-white text-lg leading-tight">
-            Emergenza
-          </span>
-          <span className="font-heading font-bold text-es-yellow text-lg leading-tight">
-            Sicilia
-          </span>
+        <Link href="/" className="flex items-center shrink-0" aria-label="Emergenza Sicilia - Home">
+          <Image
+            src="/logo_emergenza_sicilia.png"
+            alt="Emergenza Sicilia"
+            width={180}
+            height={46}
+            className="h-11 w-auto"
+            priority
+          />
         </Link>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-5" aria-label="Navigazione principale">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={cn(
-                "text-sm font-body font-medium transition-colors duration-150",
-                pathname === link.href
-                  ? "text-white font-semibold"
-                  : "text-white/80 hover:text-white"
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+        <nav className="hidden md:flex items-center gap-6" aria-label="Navigazione principale">
+          {navLinks.map((link) => {
+            const isActive =
+              link.href === "/"
+                ? stripped === "/"
+                : stripped === link.href || stripped.startsWith(link.href + "/");
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "text-sm font-body font-medium pb-1 border-b-2 transition-colors duration-150",
+                  isActive
+                    ? "text-es-blue font-semibold border-es-blue"
+                    : "text-es-text-secondary hover:text-es-blue border-transparent"
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
           <Link
             href="/premium"
-            className="bg-es-yellow text-es-text text-sm font-heading font-semibold px-4 py-1.5 rounded-chip hover:opacity-90 transition-opacity duration-150"
+            className="bg-es-blue text-white text-sm font-heading font-semibold px-4 py-2 rounded-chip hover:bg-es-blue-hover transition-colors duration-150 ml-2"
           >
-            Premium
+            ⭐ Premium
           </Link>
         </nav>
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden text-white p-2 rounded focus:outline-none focus:ring-2 focus:ring-white/50"
+          className="md:hidden text-es-text p-2 rounded focus:outline-none focus:ring-2 focus:ring-es-blue/50"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label={menuOpen ? "Chiudi menu" : "Apri menu"}
           aria-expanded={menuOpen}
@@ -74,12 +84,12 @@ export function TopBar() {
 
       {/* Mobile Nav */}
       {menuOpen && (
-        <nav className="md:hidden bg-es-blue border-t border-white/10 px-4 pb-4 pt-2" aria-label="Menu mobile">
+        <nav className="md:hidden bg-white border-t border-es-border px-4 pb-4 pt-2" aria-label="Menu mobile">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="block py-2.5 text-white/90 hover:text-white text-sm font-body border-b border-white/10 last:border-0"
+              className="block py-3 text-es-text hover:text-es-blue text-sm font-body border-b border-es-border last:border-0 transition-colors"
               onClick={() => setMenuOpen(false)}
             >
               {link.label}
@@ -87,10 +97,10 @@ export function TopBar() {
           ))}
           <Link
             href="/premium"
-            className="block mt-3 bg-es-yellow text-es-text text-sm font-heading font-semibold px-4 py-2 rounded-chip text-center"
+            className="block mt-3 bg-es-blue text-white text-sm font-heading font-semibold px-4 py-2.5 rounded-chip text-center hover:bg-es-blue-hover transition-colors"
             onClick={() => setMenuOpen(false)}
           >
-            Premium
+            ⭐ Premium
           </Link>
         </nav>
       )}
