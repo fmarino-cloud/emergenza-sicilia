@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat, Open_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -16,6 +16,10 @@ const openSans = Open_Sans({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#0056A0",
+};
+
 export const metadata: Metadata = {
   title: {
     default: "Emergenza Sicilia — Informazione in tempo reale",
@@ -24,7 +28,6 @@ export const metadata: Metadata = {
   description:
     "Portale di informazione in tempo reale su emergenze in Sicilia: terremoti, maltempo, traffico, eruzioni Etna, incendi, allerte protezione civile.",
   manifest: "/manifest.json",
-  themeColor: "#0056A0",
 };
 
 export default function RootLayout({
