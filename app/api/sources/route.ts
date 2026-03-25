@@ -22,6 +22,24 @@ const SOURCE_META = [
     description: "Viabilità, traffico e manutenzione della rete stradale siciliana",
     url: "https://www.stradeanas.it",
   },
+  {
+    key: "PC_RADAR",
+    name: "PC Radar — Nowcasting Precipitazioni",
+    description: "Vigilanza meteorologica e nowcasting precipitazioni per la Sicilia",
+    url: "https://radar.protezionecivile.it",
+  },
+  {
+    key: "OPEN_METEO",
+    name: "Open-Meteo — Meteo Province Siciliane",
+    description: "Meteo operativo in tempo reale per tutte le 9 province siciliane",
+    url: "https://open-meteo.com",
+  },
+  {
+    key: "RFI",
+    name: "RFI — Rete Ferroviaria Italiana",
+    description: "Notizie, interruzioni e comunicazioni sulle linee ferroviarie siciliane",
+    url: "https://www.rfi.it",
+  },
 ] as const;
 
 export async function GET() {

@@ -11,7 +11,7 @@ const navLinks = [
   { href: "/mappa", label: "Mappa" },
   { href: "/fonti", label: "Fonti" },
   { href: "/editoriale", label: "Editoriale" },
-  { href: "/segnala", label: "Segnala" },
+  { href: "/segnalazioni", label: "Segnala" },
   { href: "/alert", label: "Alert" },
 ];
 

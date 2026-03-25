@@ -3,6 +3,9 @@ import { prisma } from "@/lib/prisma";
 import { fetchINGVEvents } from "@/lib/ingestion/ingv";
 import { fetchPCAlerts, parsePCAlerts } from "@/lib/ingestion/protezione-civile";
 import { fetchANASEvents } from "@/lib/ingestion/anas";
+import { fetchPCRadarNowcasting } from "@/lib/ingestion/pc-radar";
+import { fetchOpenMeteoEvents } from "@/lib/ingestion/open-meteo";
+import { fetchRFIEvents } from "@/lib/ingestion/rfi";
 import { sendPushToMatching } from "@/lib/push";
 
 export const dynamic = "force-dynamic";
@@ -62,7 +65,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const results = { ingv: 0, pc: 0, anas: 0, errors: [] as string[] };
+  const results = { ingv: 0, pc: 0, anas: 0, pc_radar: 0, open_meteo: 0, rfi: 0, errors: [] as string[] };
 
   // INGV
   try {
@@ -99,6 +102,39 @@ export async function POST(request: NextRequest) {
     }
   } catch (err: any) {
     results.errors.push(`ANAS: ${err.message}`);
+  }
+
+  // PC Radar (Nowcasting precipitazioni)
+  try {
+    const events = await fetchPCRadarNowcasting();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "PC_RADAR", type: "API", category: "MALTEMPO" });
+      if (created) results.pc_radar++;
+    }
+  } catch (err: any) {
+    results.errors.push(`PC_RADAR: ${err.message}`);
+  }
+
+  // Open-Meteo (Meteo province siciliane)
+  try {
+    const events = await fetchOpenMeteoEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "OPEN_METEO", type: "API", category: "MALTEMPO" });
+      if (created) results.open_meteo++;
+    }
+  } catch (err: any) {
+    results.errors.push(`OPEN_METEO: ${err.message}`);
+  }
+
+  // RFI (Ferrovie Sicilia)
+  try {
+    const events = await fetchRFIEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "RFI", type: "RSS", category: "TRASPORTI" });
+      if (created) results.rfi++;
+    }
+  } catch (err: any) {
+    results.errors.push(`RFI: ${err.message}`);
   }
 
   // Cleanup SourceItems older than 30 days

@@ -35,6 +35,9 @@ enum SourceName {
   PC
   ANAS
   MANUALE
+  PC_RADAR
+  OPEN_METEO
+  RFI
 }
 
 enum SourceType {
