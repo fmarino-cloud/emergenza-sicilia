@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -23,15 +22,13 @@ export function TopBar() {
     <header className="sticky top-0 z-50 bg-es-blue shadow-md" role="banner">
       <div className="mx-auto max-w-content flex items-center justify-between px-4 h-14">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0" aria-label="Emergenza Sicilia - Home">
-          <Image
-            src="/logo_emergenza_sicilia.png"
-            alt="Emergenza Sicilia"
-            width={160}
-            height={40}
-            className="h-8 w-auto brightness-0 invert"
-            priority
-          />
+        <Link href="/" className="flex items-center gap-1 shrink-0" aria-label="Emergenza Sicilia - Home">
+          <span className="font-heading font-bold text-white text-lg leading-tight">
+            Emergenza
+          </span>
+          <span className="font-heading font-bold text-es-yellow text-lg leading-tight">
+            Sicilia
+          </span>
         </Link>
 
         {/* Desktop Nav */}
