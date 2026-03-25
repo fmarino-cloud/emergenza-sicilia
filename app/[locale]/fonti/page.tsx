@@ -10,9 +10,12 @@ export const metadata: Metadata = {
 };
 
 const SOURCE_META = [
-  { key: "INGV", name: "Istituto Nazionale di Geofisica e Vulcanologia", description: "Monitoraggio sismico e vulcanico del territorio nazionale. Pubblica dati in tempo reale su terremoti e attività vulcanica.", url: "https://www.ingv.it", icon: "🔴" },
-  { key: "PC", name: "Protezione Civile", description: "Il Dipartimento della Protezione Civile emette allerte meteo, gestisce emergenze e coordina i soccorsi sul territorio nazionale.", url: "https://www.protezionecivile.gov.it", icon: "⚠️" },
-  { key: "ANAS", name: "ANAS — Rete Stradale Nazionale", description: "Gestisce la rete stradale nazionale. Pubblica comunicati su traffico, incidenti, cantieri e viabilità in tempo reale.", url: "https://www.stradeanas.it", icon: "🚗" },
+  { key: "INGV",       name: "Istituto Nazionale di Geofisica e Vulcanologia", description: "Monitoraggio sismico e vulcanico del territorio nazionale. Pubblica dati in tempo reale su terremoti e attività vulcanica.", url: "https://www.ingv.it", icon: "🔴" },
+  { key: "PC",         name: "Protezione Civile", description: "Il Dipartimento della Protezione Civile emette allerte meteo, gestisce emergenze e coordina i soccorsi sul territorio nazionale.", url: "https://www.protezionecivile.gov.it", icon: "⚠️" },
+  { key: "ANAS",       name: "ANAS — Rete Stradale Nazionale", description: "Gestisce la rete stradale nazionale. Pubblica comunicati su traffico, incidenti, cantieri e viabilità in tempo reale.", url: "https://www.stradeanas.it", icon: "🚗" },
+  { key: "PC_RADAR",   name: "PC Radar — Nowcasting Precipitazioni", description: "Piattaforma radar della Protezione Civile per il nowcasting delle precipitazioni e dei temporali in Sicilia.", url: "https://radar.protezionecivile.it", icon: "🌧️" },
+  { key: "OPEN_METEO", name: "Open-Meteo — Meteo Province Siciliane", description: "Meteo operativo in tempo reale per tutte le 9 province siciliane. Rilevamento automatico di piogge intense, temporali e vento forte.", url: "https://open-meteo.com", icon: "🌦️" },
+  { key: "RFI",        name: "RFI — Rete Ferroviaria Italiana", description: "Comunicati e notizie sulla rete ferroviaria. Filtra automaticamente le informazioni relative alle linee e stazioni siciliane.", url: "https://www.rfi.it", icon: "🚂" },
 ] as const;
 
 export default async function FontiPage() {
