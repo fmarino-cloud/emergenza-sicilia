@@ -13,6 +13,8 @@ import { fetchARPAPrevisioniEvents } from "@/lib/ingestion/arpa-previsioni";
 import { fetchISPRAMareEvents } from "@/lib/ingestion/ispra-mare";
 import { fetchNASAFIRMSEvents } from "@/lib/ingestion/nasa-firms";
 import { fetchCCISSEvents } from "@/lib/ingestion/cciss";
+import { fetchMeteoAlarmEvents } from "@/lib/ingestion/meteoalarm";
+import { fetchSIASEvents } from "@/lib/ingestion/sias";
 import { sendPushToMatching } from "@/lib/push";
 
 export const dynamic = "force-dynamic";
@@ -72,7 +74,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const results = { ingv: 0, pc: 0, anas: 0, pc_radar: 0, open_meteo: 0, rfi: 0, pc_national: 0, pc_sicilia: 0, arpa_aria: 0, arpa_previsioni: 0, ispra_mare: 0, nasa_firms: 0, cciss: 0, errors: [] as string[] };
+  const results = { ingv: 0, pc: 0, anas: 0, pc_radar: 0, open_meteo: 0, rfi: 0, pc_national: 0, pc_sicilia: 0, arpa_aria: 0, arpa_previsioni: 0, ispra_mare: 0, nasa_firms: 0, cciss: 0, meteoalarm: 0, sias: 0, errors: [] as string[] };
 
   // INGV
   try {
@@ -219,6 +221,28 @@ export async function POST(request: NextRequest) {
     }
   } catch (err: any) {
     results.errors.push(`CCISS: ${err.message}`);
+  }
+
+  // MeteoAlarm (allerte meteo europee per la Sicilia)
+  try {
+    const events = await fetchMeteoAlarmEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "METEOALARM", type: "RSS", category: e.category });
+      if (created) results.meteoalarm++;
+    }
+  } catch (err: any) {
+    results.errors.push(`METEOALARM: ${err.message}`);
+  }
+
+  // SIAS (rete agrometeorologica siciliana)
+  try {
+    const events = await fetchSIASEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "SIAS", type: "API", category: "MALTEMPO" });
+      if (created) results.sias++;
+    }
+  } catch (err: any) {
+    results.errors.push(`SIAS: ${err.message}`);
   }
 
   // Cleanup SourceItems older than 30 days

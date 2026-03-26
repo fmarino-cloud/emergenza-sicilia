@@ -1,90 +1,156 @@
-import { AlertSubscribeForm } from "@/components/alerts/alert-subscribe-form";
+import { prisma } from "@/lib/prisma";
+import { SeverityBadge } from "@/components/events/severity-badge";
+import Link from "next/link";
+import type { Metadata } from "next";
 
-export const metadata = {
-  title: "Allerte in tempo reale | Emergenza Sicilia",
-  description: "Iscriviti alle allerte di emergenza della Sicilia. Ricevi notifiche push per terremoti, maltempo, incendi e altro.",
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "Allerte per Provincia — Emergenza Sicilia",
+  description:
+    "Situazione in tempo reale delle emergenze nelle 9 province siciliane: Palermo, Catania, Messina, Agrigento, Caltanissetta, Enna, Ragusa, Siracusa, Trapani.",
+  openGraph: {
+    title: "Allerte per Provincia — Emergenza Sicilia",
+    description: "Mappa delle emergenze attive nelle province della Sicilia",
+    type: "website",
+  },
 };
 
-export default function AlertePage() {
+const PROVINCE = [
+  { slug: "palermo",       nome: "Palermo",       codice: "PA" },
+  { slug: "catania",       nome: "Catania",        codice: "CT" },
+  { slug: "messina",       nome: "Messina",        codice: "ME" },
+  { slug: "agrigento",     nome: "Agrigento",      codice: "AG" },
+  { slug: "caltanissetta", nome: "Caltanissetta",  codice: "CL" },
+  { slug: "enna",          nome: "Enna",            codice: "EN" },
+  { slug: "ragusa",        nome: "Ragusa",          codice: "RG" },
+  { slug: "siracusa",      nome: "Siracusa",        codice: "SR" },
+  { slug: "trapani",       nome: "Trapani",         codice: "TP" },
+];
+
+type Severity = "BASSA" | "MEDIA" | "ALTA" | "CRITICA";
+const SEVERITY_ORDER: Severity[] = ["BASSA", "MEDIA", "ALTA", "CRITICA"];
+
+const SEVERITY_CARD_CONFIG: Record<Severity, { border: string; bg: string }> = {
+  BASSA:   { border: "border-es-green/30",  bg: "bg-es-green/5" },
+  MEDIA:   { border: "border-es-yellow/40", bg: "bg-es-yellow/5" },
+  ALTA:    { border: "border-es-red/30",    bg: "bg-es-red/5" },
+  CRITICA: { border: "border-es-red/60",    bg: "bg-es-red/10" },
+};
+
+export default async function AllertePage() {
+  // Get event counts and max severity per province
+  const provinceCodes = PROVINCE.map((p) => p.codice);
+
+  const [eventGroups, maxSeverities] = await Promise.all([
+    prisma.event.groupBy({
+      by: ["provincia"],
+      where: {
+        provincia: { in: provinceCodes },
+        status: { not: "CHIUSO" },
+      },
+      _count: true,
+    }),
+    prisma.event.findMany({
+      where: {
+        provincia: { in: provinceCodes },
+        status: { not: "CHIUSO" },
+      },
+      select: { provincia: true, severity: true },
+    }),
+  ]);
+
+  // Build per-province stats
+  const provStats = PROVINCE.map((prov) => {
+    const count = eventGroups.find((g) => g.provincia === prov.codice)?._count ?? 0;
+    const sevEvents = maxSeverities.filter((e) => e.provincia === prov.codice);
+    const maxSev = sevEvents.reduce<Severity>((max, e) => {
+      const sev = e.severity as Severity;
+      return SEVERITY_ORDER.indexOf(sev) > SEVERITY_ORDER.indexOf(max) ? sev : max;
+    }, "BASSA");
+    return { ...prov, count, maxSev };
+  });
+
+  const totalEvents = provStats.reduce((sum, p) => sum + p.count, 0);
+
   return (
-    <div className="min-h-screen bg-es-bg">
+    <>
       {/* Hero */}
-      <section className="bg-es-blue py-12 px-4">
-        <div className="mx-auto max-w-content text-center">
-          <h1 className="font-heading font-bold text-white text-h1 mb-3">
-            Ricevi allerte in tempo reale
+      <section className="bg-gradient-to-br from-es-navy to-es-blue text-white py-10 px-4">
+        <div className="mx-auto max-w-content">
+          {/* Breadcrumb */}
+          <nav className="text-sm font-body text-white/60 mb-6" aria-label="Breadcrumb">
+            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            <span className="mx-2">›</span>
+            <span className="text-white font-semibold">Allerte</span>
+          </nav>
+
+          <h1 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2 leading-tight">
+            Allerte per provincia
           </h1>
-          <p className="font-body text-white/80 text-base max-w-xl mx-auto">
-            Attiva le notifiche push per ricevere avvisi immediati sulle emergenze
-            nelle province e categorie che ti interessano.
+          <p className="text-white/70 font-body text-sm">
+            {totalEvents} eventi attivi nelle 9 province siciliane
           </p>
         </div>
       </section>
 
-      {/* Content */}
-      <section className="py-10 px-4">
-        <div className="mx-auto max-w-content grid md:grid-cols-3 gap-8 items-start">
-          {/* Form */}
-          <div className="md:col-span-2 bg-white rounded-card shadow-sm p-6 border border-es-border">
-            <h2 className="font-heading font-semibold text-es-text text-h2 mb-6">
-              Personalizza le tue allerte
-            </h2>
-            <AlertSubscribeForm />
-          </div>
+      {/* Province grid */}
+      <div className="mx-auto max-w-content px-4 py-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+          {provStats.map((prov) => {
+            const cardConf = prov.count > 0 ? SEVERITY_CARD_CONFIG[prov.maxSev] : { border: "border-es-border", bg: "" };
+            return (
+              <Link
+                key={prov.slug}
+                href={`/allerte/${prov.slug}`}
+                className="block focus:outline-none focus:ring-2 focus:ring-es-blue focus:ring-offset-2 rounded-card"
+              >
+                <article
+                  className={`bg-white rounded-card border ${cardConf.border} ${cardConf.bg} p-6 hover:shadow-md transition-shadow duration-150 h-full flex flex-col justify-between`}
+                >
+                  <div>
+                    <div className="flex items-start justify-between gap-2 mb-3">
+                      <h2 className="text-xl font-heading font-bold text-es-text">{prov.nome}</h2>
+                      <span className="text-xs font-heading font-semibold text-es-text-secondary bg-es-bg border border-es-border px-2 py-0.5 rounded shrink-0">
+                        {prov.codice}
+                      </span>
+                    </div>
 
-          {/* Info sidebar */}
-          <aside className="space-y-4">
-            <div className="bg-white rounded-card border border-es-border p-5 shadow-sm">
-              <h3 className="font-heading font-semibold text-es-text text-base mb-3">
-                Come funzionano le allerte
-              </h3>
-              <ul className="space-y-2 font-body text-sm text-es-text-secondary">
-                <li className="flex items-start gap-2">
-                  <span className="text-es-blue shrink-0">•</span>
-                  <span>Seleziona le province e categorie di interesse.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-es-blue shrink-0">•</span>
-                  <span>Imposta la gravità minima per ricevere solo le allerte rilevanti.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-es-blue shrink-0">•</span>
-                  <span>Ricevi notifiche push direttamente sul tuo dispositivo.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-es-blue shrink-0">•</span>
-                  <span>Funziona anche con il browser chiuso (Android/Desktop).</span>
-                </li>
-              </ul>
-            </div>
+                    <p className="text-3xl font-heading font-bold text-es-text mb-1">
+                      {prov.count}
+                    </p>
+                    <p className="text-sm text-es-text-secondary font-body mb-4">
+                      {prov.count === 0
+                        ? "Nessun evento attivo"
+                        : prov.count === 1
+                        ? "evento attivo"
+                        : "eventi attivi"}
+                    </p>
+                  </div>
 
-            <div className="bg-es-yellow/10 rounded-card border border-es-yellow/30 p-5">
-              <h3 className="font-heading font-semibold text-es-text text-sm mb-2">
-                Privacy
-              </h3>
-              <p className="font-body text-sm text-es-text-secondary">
-                Non raccogliamo dati personali identificativi. Le preferenze sono
-                associate in modo anonimo al tuo dispositivo.{" "}
-                <a href="/privacy" className="text-es-blue underline">
-                  Leggi la privacy policy
-                </a>
-                .
-              </p>
-            </div>
-
-            <div className="bg-white rounded-card border border-es-border p-5 shadow-sm">
-              <h3 className="font-heading font-semibold text-es-text text-sm mb-2">
-                Compatibilità
-              </h3>
-              <ul className="font-body text-sm text-es-text-secondary space-y-1">
-                <li>✓ Chrome / Edge (Android, Desktop)</li>
-                <li>✓ Firefox (Desktop)</li>
-                <li>✓ Safari (iOS 16.4+, macOS)</li>
-              </ul>
-            </div>
-          </aside>
+                  <div className="flex items-center justify-between">
+                    {prov.count > 0 ? (
+                      <SeverityBadge severity={prov.maxSev} />
+                    ) : (
+                      <span className="text-xs text-es-green font-heading font-semibold bg-es-green/10 px-2.5 py-0.5 rounded-chip">
+                        Situazione normale
+                      </span>
+                    )}
+                    <span className="text-es-blue text-sm font-heading font-semibold">
+                      Vedi allerte →
+                    </span>
+                  </div>
+                </article>
+              </Link>
+            );
+          })}
         </div>
-      </section>
-    </div>
+
+        {/* Informational note */}
+        <p className="text-xs text-es-text-secondary font-body mt-8 text-center">
+          Dati aggiornati in tempo reale. Ultimo aggiornamento: ogni 60 secondi.
+        </p>
+      </div>
+    </>
   );
 }

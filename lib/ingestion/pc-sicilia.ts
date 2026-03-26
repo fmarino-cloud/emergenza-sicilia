@@ -9,6 +9,21 @@ import type { ParsedIngestionEvent } from "./ingv";
 const BASE_URL = "https://www.protezionecivilesicilia.it";
 const NEWS_URL = `${BASE_URL}/it/news/?pageid=75`;
 
+// Filtro geo-testuale (questa fonte è già dedicata alla Sicilia, ma lo applichiamo
+// come guardia contro eventuali false corrispondenze di scraping)
+const SICILIA_KEYWORDS = [
+  "sicilia", "siciliana", "siciliano", "siciliane", "siciliani",
+  "palermo", "catania", "messina", "agrigento", "caltanissetta",
+  "enna", "ragusa", "siracusa", "trapani",
+  "etna", "stromboli", "vulcano", "lipari", "eolie", "pantelleria",
+  "lampedusa", "allerta", "avviso", "bollettino", "rischio",
+];
+
+function isSicilia(text: string): boolean {
+  const lower = ` ${text.toLowerCase()} `;
+  return SICILIA_KEYWORDS.some((k) => lower.includes(k));
+}
+
 // Pattern to match individual news items in the HTML
 // Each item is a link like: <a href="/it/NNNNN-title.asp">...</a>
 const ITEM_PATTERN = /<a\s+href="(\/it\/\d{4,6}-[^"]+\.asp)"[^>]*>([\s\S]*?)<\/a>/gi;

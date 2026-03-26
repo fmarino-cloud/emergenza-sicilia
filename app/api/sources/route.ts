@@ -82,6 +82,18 @@ const SOURCE_META = [
     description: "Centro Coordinamento Informazioni sulla Sicurezza Stradale. Feed RSS con avvisi traffico, incidenti e viabilità sulle strade siciliane.",
     url: "https://www.viaggiareinformati.it",
   },
+  {
+    key: "METEOALARM",
+    name: "Meteoalarm – Allerte Meteo Europee",
+    description: "Sistema europeo di allerta meteo. Fornisce avvisi ufficiali di livello giallo/arancione/rosso per la Sicilia.",
+    url: "https://www.meteoalarm.org",
+  },
+  {
+    key: "SIAS",
+    name: "SIAS – Servizio Agrometeorologico Siciliano",
+    description: "Rete di stazioni meteo siciliane. Dati di precipitazioni, vento e temperatura in tempo reale per le 9 province.",
+    url: "https://www.sias.regione.sicilia.it",
+  },
 ] as const;
 
 export async function GET() {

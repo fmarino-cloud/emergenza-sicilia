@@ -4,13 +4,33 @@ import type { ParsedIngestionEvent } from "./ingv";
 // RFI (Rete Ferroviaria Italiana) — notizie/interruzioni linee in Sicilia
 
 const SICILIA_RAIL_KEYWORDS = [
-  "sicilia", "siciliana", "siciliano",
-  "palermo", "catania", "messina", "trapani",
-  "siracusa", "agrigento", "ragusa", "caltanissetta", "enna",
+  // Province e varianti
+  "sicilia", "siciliana", "siciliano", "siciliane", "siciliani",
+  "palermo", "catania", "messina", "agrigento", "caltanissetta",
+  "enna", "ragusa", "siracusa", "trapani",
+  // Codici provincia (con spazi per evitare falsi positivi)
+  " pa ", " ct ", " me ", " ag ", " cl ", " en ", " rg ", " sr ", " tp ",
+  // Stazioni e linee ferroviarie siciliane
   "palermo centrale", "catania centrale", "messina centrale",
   "linea messina", "linea palermo", "linea catania",
   "circumetnea",
+  // Isole e luoghi noti
+  "etna", "stromboli", "vulcano", "lipari", "eolie", "pantelleria",
+  "lampedusa", "linosa", "ustica", "favignana", "marettimo",
+  "stretto di messina", "canale di sicilia",
+  // Città principali
+  "marsala", "mazara", "alcamo", "bagheria", "vittoria", "gela",
+  "acireale", "giarre", "paterno", "misterbianco",
+  "modica", "scicli", "comiso", "avola", "noto", "pachino",
+  "porto empedocle", "licata", "sciacca", "ribera", "bivona",
+  "leonforte", "nicosia", "aidone", "piazza armerina",
+  "termini imerese", "cefalù", "misilmeri", "monreale", "partinico",
 ];
+
+function isSicilia(text: string): boolean {
+  const lower = ` ${text.toLowerCase()} `;
+  return SICILIA_RAIL_KEYWORDS.some((k) => lower.includes(k.toLowerCase()));
+}
 
 const DISRUPTION_KEYWORDS = [
   "interrupt", "soppres", "ritard", "cancel", "guasto",
@@ -37,8 +57,8 @@ export function parseRFIRss(xml: string): ParsedIngestionEvent[] {
     const pubDate = extractXmlTag(item, "pubDate");
     if (!title || !pubDate) continue;
 
-    const combined = `${title} ${description}`.toLowerCase();
-    if (!SICILIA_RAIL_KEYWORDS.some((kw) => combined.includes(kw))) continue;
+    const combined = ` ${title} ${description} `.toLowerCase();
+    if (!isSicilia(combined)) continue;
 
     const isDisruption = DISRUPTION_KEYWORDS.some((kw) => combined.includes(kw));
     const severity = isDisruption ? "ALTA" : "MEDIA";

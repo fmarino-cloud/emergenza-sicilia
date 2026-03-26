@@ -6,7 +6,9 @@ import type { ParsedIngestionEvent } from "./ingv";
 // Endpoint format: https://firms.modaps.eosdis.nasa.gov/api/area/csv/{KEY}/{SOURCE}/{BBOX}/{DAYS}
 // BBOX for Sicily: west=11.93, south=36.62, east=15.65, north=38.28
 
-const SICILIA_BBOX = "11.93,36.62,15.65,38.28";
+// Bounding box include isole minori: Lampedusa lat ~35.50, Pantelleria lat ~36.83
+// Format: west,south,east,north
+const SICILIA_BBOX = "11.93,35.48,15.65,38.35";
 const FIRMS_SOURCE = "VIIRS_SNPP_NRT";
 const FIRMS_BASE = "https://firms.modaps.eosdis.nasa.gov/api/area/csv";
 
@@ -40,6 +42,9 @@ function parseFIRMSCSV(csv: string): ParsedIngestionEvent[] {
     const lat = parseFloat(cols[latIdx] ?? "");
     const lng = parseFloat(cols[lngIdx] ?? "");
     if (isNaN(lat) || isNaN(lng)) continue;
+
+    // Belt-and-suspenders: verify point falls within Sicilia bbox (includes isole minori)
+    if (lat < 35.48 || lat > 38.35 || lng < 11.93 || lng > 15.65) continue;
 
     const confRaw = cols[confIdx] ?? "";
     // Confidence can be "h" (high), "n" (nominal), "l" (low) or a numeric 0-100

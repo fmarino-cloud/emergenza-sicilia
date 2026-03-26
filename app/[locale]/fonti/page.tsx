@@ -23,6 +23,8 @@ const SOURCE_META = [
   { key: "ISPRA_MARE",    name: "ISPRA — Rete Mareografica Nazionale", description: "Dati in tempo reale dalle stazioni mareografiche siciliane (Palermo, Catania, Messina, Porto Empedocle). Monitora livelli del mare e condizioni meteo-marine.", url: "https://www.mareografico.it", icon: "🌊" },
   { key: "NASA_FIRMS",    name: "NASA FIRMS — Incendi Attivi", description: "Rilevamenti satellitari di incendi attivi in Sicilia tramite sensore VIIRS SNPP (NASA LANCE). Dati in near-real-time con coordinate e confidence level.", url: "https://firms.modaps.eosdis.nasa.gov", icon: "🛰️" },
   { key: "CCISS", name: "CCISS – Viaggiare Informati e Sicuri", description: "Centro Coordinamento Informazioni sulla Sicurezza Stradale. Feed RSS con avvisi traffico, incidenti e viabilità sulle strade siciliane.", url: "https://www.viaggiareinformati.it", icon: "🛣️" },
+  { key: "METEOALARM", name: "Meteoalarm – Allerte Meteo Europee", description: "Sistema europeo di allerta meteo. Fornisce avvisi ufficiali di livello giallo/arancione/rosso per la Sicilia.", url: "https://www.meteoalarm.org", icon: "🌩️" },
+  { key: "SIAS", name: "SIAS – Servizio Agrometeorologico Siciliano", description: "Rete di stazioni meteo siciliane. Dati di precipitazioni, vento e temperatura in tempo reale per le 9 province.", url: "https://www.sias.regione.sicilia.it", icon: "🌡️" },
 ] as const;
 
 export default async function FontiPage() {

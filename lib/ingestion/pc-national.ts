@@ -3,12 +3,32 @@ import type { ParsedIngestionEvent } from "./ingv";
 
 // Keywords for filtering Sicilia-related content
 const SICILIA_KEYWORDS = [
-  "sicilia", "siciliana", "siciliano", "ct", "me", "pa", "ag", "cl", "en", "rg", "sr", "tp",
-  "catania", "messina", "palermo", "agrigento", "caltanissetta", "enna", "ragusa", "siracusa", "trapani",
+  // Province e varianti
+  "sicilia", "siciliana", "siciliano", "siciliane", "siciliani",
+  "palermo", "catania", "messina", "agrigento", "caltanissetta",
+  "enna", "ragusa", "siracusa", "trapani",
+  // Codici provincia (con spazi per evitare falsi positivi)
+  " pa ", " ct ", " me ", " ag ", " cl ", " en ", " rg ", " sr ", " tp ",
+  // Autostrade siciliane
+  "a18", "a19", "a20", "a29", "a29dir",
+  // Strade statali siciliane
+  "ss113", "ss114", "ss115", "ss117", "ss120", "ss121", "ss188", "ss189",
+  "ss626", "ss640", "ss624", "ss284",
+  // Isole e luoghi noti
+  "etna", "stromboli", "vulcano", "lipari", "eolie", "pantelleria",
+  "lampedusa", "linosa", "ustica", "favignana", "marettimo",
+  "stretto di messina", "canale di sicilia",
+  // Città principali
+  "marsala", "mazara", "alcamo", "bagheria", "vittoria", "gela",
+  "acireale", "giarre", "paterno", "misterbianco",
+  "modica", "scicli", "comiso", "avola", "noto", "pachino",
+  "porto empedocle", "licata", "sciacca", "ribera", "bivona",
+  "leonforte", "nicosia", "aidone", "piazza armerina",
+  "termini imerese", "cefalù", "misilmeri", "monreale", "partinico",
 ];
 
-// Sicilia bounding box
-const SICILIA_LAT = { min: 36.62, max: 38.28 };
+// Sicilia bounding box (include isole minori: Lampedusa lat 35.48, Pantelleria lat 36.8)
+const SICILIA_LAT = { min: 35.48, max: 38.35 };
 const SICILIA_LNG = { min: 11.93, max: 15.65 };
 
 function extractTag(xml: string, tag: string): string {
@@ -17,8 +37,8 @@ function extractTag(xml: string, tag: string): string {
 }
 
 function isSiciliaRelated(text: string): boolean {
-  const lower = text.toLowerCase();
-  return SICILIA_KEYWORDS.some((kw) => lower.includes(kw));
+  const lower = ` ${text.toLowerCase()} `;
+  return SICILIA_KEYWORDS.some((kw) => lower.includes(kw.toLowerCase()));
 }
 
 function parseSeverity(text: string): "BASSA" | "MEDIA" | "ALTA" | "CRITICA" {

@@ -42,8 +42,15 @@ export function parseINGVResponse(
   data: INGVGeoJSON,
   minMagnitude = 0
 ): ParsedIngestionEvent[] {
+  // Sicilia bbox incluse isole minori (Lampedusa lat 35.48, Pantelleria lat 36.83)
+  const LAT_MIN = 35.48, LAT_MAX = 38.35, LNG_MIN = 11.93, LNG_MAX = 15.65;
+
   return data.features
-    .filter((f) => f.properties.mag >= minMagnitude)
+    .filter((f) => {
+      if (f.properties.mag < minMagnitude) return false;
+      const [lng, lat] = f.geometry.coordinates;
+      return lat >= LAT_MIN && lat <= LAT_MAX && lng >= LNG_MIN && lng <= LNG_MAX;
+    })
     .map((feature) => {
       const p = feature.properties;
       const [lng, lat, depth] = feature.geometry.coordinates;
@@ -64,8 +71,9 @@ export function parseINGVResponse(
     });
 }
 
+// Bounding box include isole minori: Lampedusa lat ~35.50, Pantelleria lat ~36.83
 const INGV_BASE =
-  "https://webservices.ingv.it/fdsnws/event/1/query?format=geojson&minmagnitude=2.0&minlatitude=36&maxlatitude=38.5&minlongitude=11.5&maxlongitude=15.7&orderby=time&limit=50";
+  "https://webservices.ingv.it/fdsnws/event/1/query?format=geojson&minmagnitude=2.0&minlatitude=35.48&maxlatitude=38.35&minlongitude=11.93&maxlongitude=15.65&orderby=time&limit=50";
 
 export async function fetchINGVEvents(): Promise<ParsedIngestionEvent[]> {
   const startTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 19);

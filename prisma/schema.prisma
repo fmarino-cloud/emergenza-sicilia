@@ -45,6 +45,8 @@ enum SourceName {
   ISPRA_MARE
   NASA_FIRMS
   CCISS
+  METEOALARM
+  SIAS
 }
 
 enum SourceType {
