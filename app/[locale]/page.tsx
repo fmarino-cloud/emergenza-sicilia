@@ -41,7 +41,7 @@ const STATUS_CONFIG: Record<Severity, { label: string; badge: string; dot: strin
 };
 
 export default async function HomePage() {
-  const [events, feedItems, editorials, categoryStats] = await Promise.all([
+  const [events, feedItems, editorials, categoryStats, activeSources] = await Promise.all([
     prisma.event.findMany({
       where: { status: { not: "CHIUSO" } },
       orderBy: { publishedAt: "desc" },
@@ -52,8 +52,8 @@ export default async function HomePage() {
       },
     }),
     prisma.sourceItem.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 5,
+      orderBy: { publishedAt: "desc" },
+      take: 8,
       select: { id: true, source: true, title: true, url: true, publishedAt: true },
     }),
     prisma.editorialPost.findMany({
@@ -69,6 +69,11 @@ export default async function HomePage() {
       by: ["category"],
       where: { status: { not: "CHIUSO" } },
       _count: true,
+    }),
+    prisma.sourceItem.findMany({
+      distinct: ["source"],
+      select: { source: true },
+      orderBy: { createdAt: "desc" },
     }),
   ]);
 
@@ -98,7 +103,7 @@ export default async function HomePage() {
                 Sicilia — Situazione in tempo reale
               </h1>
               <p className="text-white/70 font-body text-sm">
-                {events.length} eventi attivi · Fonti: INGV · Protezione Civile · ANAS
+                {events.length} eventi attivi · Fonti: {activeSources.map((s) => s.source).join(" · ")}
               </p>
             </div>
             <div
@@ -180,7 +185,10 @@ export default async function HomePage() {
                         {item.source}
                       </span>
                       <time className="text-[10px] text-es-text-secondary font-body">
-                        {new Date(item.publishedAt).toLocaleDateString("it-IT")}
+                        {new Date(item.publishedAt).toLocaleString("it-IT", {
+                          day: "2-digit", month: "2-digit",
+                          hour: "2-digit", minute: "2-digit",
+                        })}
                       </time>
                     </div>
                     <p className="text-sm font-body text-es-text line-clamp-2">{item.title}</p>

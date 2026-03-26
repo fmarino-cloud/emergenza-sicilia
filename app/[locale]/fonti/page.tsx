@@ -23,9 +23,9 @@ export default async function FontiPage() {
     SOURCE_META.map(async (src) => {
       const recentItems = await prisma.sourceItem.findMany({
         where: { source: src.key as any },
-        orderBy: { createdAt: "desc" },
+        orderBy: { publishedAt: "desc" },
         take: 5,
-        select: { id: true, title: true, url: true, publishedAt: true, createdAt: true },
+        select: { id: true, title: true, url: true, publishedAt: true },
       });
       return { ...src, recentItems };
     })
@@ -77,7 +77,10 @@ export default async function FontiPage() {
                     <div className="flex items-start justify-between gap-4">
                       <p className="text-sm font-body text-es-text line-clamp-1 flex-1">{item.title}</p>
                       <time className="text-xs text-es-text-secondary font-body shrink-0">
-                        {new Date(item.publishedAt).toLocaleDateString("it-IT")}
+                        {new Date(item.publishedAt).toLocaleString("it-IT", {
+                          day: "2-digit", month: "2-digit",
+                          hour: "2-digit", minute: "2-digit",
+                        })}
                       </time>
                     </div>
                   </a>
