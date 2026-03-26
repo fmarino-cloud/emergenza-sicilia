@@ -73,7 +73,6 @@ export default async function HomePage() {
     prisma.sourceItem.findMany({
       distinct: ["source"],
       select: { source: true },
-      orderBy: { createdAt: "desc" },
     }),
   ]);
 
