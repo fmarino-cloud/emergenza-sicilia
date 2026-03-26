@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { SyncWordPressButton } from "./sync-button";
+import { FeaturedToggle } from "./featured-toggle";
 
 export default async function AdminEditorialiPage() {
   const posts = await prisma.editorialPost.findMany({
@@ -11,6 +12,7 @@ export default async function AdminEditorialiPage() {
       title: true,
       slug: true,
       type: true,
+      featured: true,
       publishedAt: true,
       syncedAt: true,
     },
@@ -34,6 +36,7 @@ export default async function AdminEditorialiPage() {
                 <th className="text-left px-4 py-3 text-xs font-heading text-gray-500 uppercase tracking-wide">Data</th>
                 <th className="text-left px-4 py-3 text-xs font-heading text-gray-500 uppercase tracking-wide">WP ID</th>
                 <th className="text-left px-4 py-3 text-xs font-heading text-gray-500 uppercase tracking-wide">Sincronizzato</th>
+                <th className="text-left px-4 py-3 text-xs font-heading text-gray-500 uppercase tracking-wide">Evidenza</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -59,6 +62,9 @@ export default async function AdminEditorialiPage() {
                   <td className="px-4 py-3 text-gray-400 font-mono text-xs">{p.wpId}</td>
                   <td className="px-4 py-3 text-gray-400 text-xs">
                     {new Date(p.syncedAt).toLocaleDateString("it-IT")}
+                  </td>
+                  <td className="px-4 py-3">
+                    <FeaturedToggle id={p.id} featured={p.featured} />
                   </td>
                 </tr>
               ))}
