@@ -12,6 +12,7 @@ import { fetchARPAAriaEvents } from "@/lib/ingestion/arpa-aria";
 import { fetchARPAPrevisioniEvents } from "@/lib/ingestion/arpa-previsioni";
 import { fetchISPRAMareEvents } from "@/lib/ingestion/ispra-mare";
 import { fetchNASAFIRMSEvents } from "@/lib/ingestion/nasa-firms";
+import { fetchCCISSEvents } from "@/lib/ingestion/cciss";
 import { sendPushToMatching } from "@/lib/push";
 
 export const dynamic = "force-dynamic";
@@ -71,7 +72,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const results = { ingv: 0, pc: 0, anas: 0, pc_radar: 0, open_meteo: 0, rfi: 0, pc_national: 0, pc_sicilia: 0, arpa_aria: 0, arpa_previsioni: 0, ispra_mare: 0, nasa_firms: 0, errors: [] as string[] };
+  const results = { ingv: 0, pc: 0, anas: 0, pc_radar: 0, open_meteo: 0, rfi: 0, pc_national: 0, pc_sicilia: 0, arpa_aria: 0, arpa_previsioni: 0, ispra_mare: 0, nasa_firms: 0, cciss: 0, errors: [] as string[] };
 
   // INGV
   try {
@@ -207,6 +208,17 @@ export async function POST(request: NextRequest) {
     }
   } catch (err: any) {
     results.errors.push(`NASA_FIRMS: ${err.message}`);
+  }
+
+  // CCISS (Centro Coordinamento Informazioni sulla Sicurezza Stradale)
+  try {
+    const events = await fetchCCISSEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "CCISS", type: "RSS", category: "TRAFFICO" });
+      if (created) results.cciss++;
+    }
+  } catch (err: any) {
+    results.errors.push(`CCISS: ${err.message}`);
   }
 
   // Cleanup SourceItems older than 30 days

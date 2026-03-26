@@ -76,6 +76,12 @@ const SOURCE_META = [
     description: "Rilevamenti satellitari VIIRS SNPP di incendi attivi in Sicilia",
     url: "https://firms.modaps.eosdis.nasa.gov",
   },
+  {
+    key: "CCISS",
+    name: "CCISS – Viaggiare Informati e Sicuri",
+    description: "Centro Coordinamento Informazioni sulla Sicurezza Stradale. Feed RSS con avvisi traffico, incidenti e viabilità sulle strade siciliane.",
+    url: "https://www.viaggiareinformati.it",
+  },
 ] as const;
 
 export async function GET() {

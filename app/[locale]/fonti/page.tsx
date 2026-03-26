@@ -22,6 +22,7 @@ const SOURCE_META = [
   { key: "ARPA_PREVISIONI", name: "ARPA Sicilia — Previsioni Aria 72h", description: "Previsioni qualità dell'aria a 72 ore elaborate da ARPA Sicilia per il territorio regionale.", url: "https://www.arpa.sicilia.it/temi-ambientali/aria/previsioni-della-qualita-dellaria-in-sicilia/", icon: "📊" },
   { key: "ISPRA_MARE",    name: "ISPRA — Rete Mareografica Nazionale", description: "Dati in tempo reale dalle stazioni mareografiche siciliane (Palermo, Catania, Messina, Porto Empedocle). Monitora livelli del mare e condizioni meteo-marine.", url: "https://www.mareografico.it", icon: "🌊" },
   { key: "NASA_FIRMS",    name: "NASA FIRMS — Incendi Attivi", description: "Rilevamenti satellitari di incendi attivi in Sicilia tramite sensore VIIRS SNPP (NASA LANCE). Dati in near-real-time con coordinate e confidence level.", url: "https://firms.modaps.eosdis.nasa.gov", icon: "🛰️" },
+  { key: "CCISS", name: "CCISS – Viaggiare Informati e Sicuri", description: "Centro Coordinamento Informazioni sulla Sicurezza Stradale. Feed RSS con avvisi traffico, incidenti e viabilità sulle strade siciliane.", url: "https://www.viaggiareinformati.it", icon: "🛣️" },
 ] as const;
 
 export default async function FontiPage() {

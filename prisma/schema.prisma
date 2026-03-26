@@ -44,6 +44,7 @@ enum SourceName {
   ARPA_PREVISIONI
   ISPRA_MARE
   NASA_FIRMS
+  CCISS
 }
 
 enum SourceType {
