@@ -40,6 +40,42 @@ const SOURCE_META = [
     description: "Notizie, interruzioni e comunicazioni sulle linee ferroviarie siciliane",
     url: "https://www.rfi.it",
   },
+  {
+    key: "PC_NATIONAL",
+    name: "Protezione Civile Nazionale",
+    description: "Comunicati e allerte del Dipartimento della Protezione Civile nazionale, filtrati per Sicilia",
+    url: "https://www.protezionecivile.gov.it",
+  },
+  {
+    key: "PC_SICILIA",
+    name: "Protezione Civile Sicilia",
+    description: "Avvisi regionali su rischio incendi, ondate di calore e allerta idrogeologica",
+    url: "https://www.protezionecivilesicilia.it",
+  },
+  {
+    key: "ARPA_ARIA",
+    name: "ARPA Sicilia — Qualità dell'Aria",
+    description: "Superamenti soglia PM10, NO2 e O3 dalla rete di monitoraggio ARPA Sicilia",
+    url: "https://www.arpa.sicilia.it/temi-ambientali/aria/",
+  },
+  {
+    key: "ARPA_PREVISIONI",
+    name: "ARPA Sicilia — Previsioni Aria 72h",
+    description: "Previsioni qualità dell'aria a 72 ore per la Sicilia",
+    url: "https://www.arpa.sicilia.it/temi-ambientali/aria/previsioni-della-qualita-dellaria-in-sicilia/",
+  },
+  {
+    key: "ISPRA_MARE",
+    name: "ISPRA — Rete Mareografica Nazionale",
+    description: "Livello del mare e condizioni meteo-marine dalle stazioni siciliane",
+    url: "https://www.mareografico.it",
+  },
+  {
+    key: "NASA_FIRMS",
+    name: "NASA FIRMS — Incendi Attivi",
+    description: "Rilevamenti satellitari VIIRS SNPP di incendi attivi in Sicilia",
+    url: "https://firms.modaps.eosdis.nasa.gov",
+  },
 ] as const;
 
 export async function GET() {

@@ -6,6 +6,12 @@ import { fetchANASEvents } from "@/lib/ingestion/anas";
 import { fetchPCRadarNowcasting } from "@/lib/ingestion/pc-radar";
 import { fetchOpenMeteoEvents } from "@/lib/ingestion/open-meteo";
 import { fetchRFIEvents } from "@/lib/ingestion/rfi";
+import { fetchPCNationalEvents } from "@/lib/ingestion/pc-national";
+import { fetchPCSiciliaEvents } from "@/lib/ingestion/pc-sicilia";
+import { fetchARPAAriaEvents } from "@/lib/ingestion/arpa-aria";
+import { fetchARPAPrevisioniEvents } from "@/lib/ingestion/arpa-previsioni";
+import { fetchISPRAMareEvents } from "@/lib/ingestion/ispra-mare";
+import { fetchNASAFIRMSEvents } from "@/lib/ingestion/nasa-firms";
 import { sendPushToMatching } from "@/lib/push";
 
 export const dynamic = "force-dynamic";
@@ -65,7 +71,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const results = { ingv: 0, pc: 0, anas: 0, pc_radar: 0, open_meteo: 0, rfi: 0, errors: [] as string[] };
+  const results = { ingv: 0, pc: 0, anas: 0, pc_radar: 0, open_meteo: 0, rfi: 0, pc_national: 0, pc_sicilia: 0, arpa_aria: 0, arpa_previsioni: 0, ispra_mare: 0, nasa_firms: 0, errors: [] as string[] };
 
   // INGV
   try {
@@ -135,6 +141,72 @@ export async function POST(request: NextRequest) {
     }
   } catch (err: any) {
     results.errors.push(`RFI: ${err.message}`);
+  }
+
+  // PC National (Protezione Civile Nazionale RSS)
+  try {
+    const events = await fetchPCNationalEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "PC_NATIONAL", type: "RSS", category: e.category });
+      if (created) results.pc_national++;
+    }
+  } catch (err: any) {
+    results.errors.push(`PC_NATIONAL: ${err.message}`);
+  }
+
+  // PC Sicilia (Protezione Civile Sicilia HTML scraping)
+  try {
+    const events = await fetchPCSiciliaEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "PC_SICILIA", type: "RSS", category: e.category });
+      if (created) results.pc_sicilia++;
+    }
+  } catch (err: any) {
+    results.errors.push(`PC_SICILIA: ${err.message}`);
+  }
+
+  // ARPA Aria (qualità aria Sicilia)
+  try {
+    const events = await fetchARPAAriaEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "ARPA_ARIA", type: "API", category: "ALLERTA" });
+      if (created) results.arpa_aria++;
+    }
+  } catch (err: any) {
+    results.errors.push(`ARPA_ARIA: ${err.message}`);
+  }
+
+  // ARPA Previsioni (previsioni qualità aria 72h)
+  try {
+    const events = await fetchARPAPrevisioniEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "ARPA_PREVISIONI", type: "API", category: "ALLERTA" });
+      if (created) results.arpa_previsioni++;
+    }
+  } catch (err: any) {
+    results.errors.push(`ARPA_PREVISIONI: ${err.message}`);
+  }
+
+  // ISPRA Mare (rete mareografica stazioni siciliane)
+  try {
+    const events = await fetchISPRAMareEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "ISPRA_MARE", type: "API", category: "ALLERTA" });
+      if (created) results.ispra_mare++;
+    }
+  } catch (err: any) {
+    results.errors.push(`ISPRA_MARE: ${err.message}`);
+  }
+
+  // NASA FIRMS (incendi attivi)
+  try {
+    const events = await fetchNASAFIRMSEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "NASA_FIRMS", type: "API", category: "INCENDIO" });
+      if (created) results.nasa_firms++;
+    }
+  } catch (err: any) {
+    results.errors.push(`NASA_FIRMS: ${err.message}`);
   }
 
   // Cleanup SourceItems older than 30 days

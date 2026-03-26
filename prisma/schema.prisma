@@ -38,6 +38,12 @@ enum SourceName {
   PC_RADAR
   OPEN_METEO
   RFI
+  PC_NATIONAL
+  PC_SICILIA
+  ARPA_ARIA
+  ARPA_PREVISIONI
+  ISPRA_MARE
+  NASA_FIRMS
 }
 
 enum SourceType {
