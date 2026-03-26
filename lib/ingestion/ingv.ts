@@ -22,7 +22,6 @@ interface INGVFeature {
     mag: number;
     magType: string;
     place: string;
-    depth: number;
   };
   geometry: { coordinates: [number, number, number] };
 }
@@ -47,12 +46,12 @@ export function parseINGVResponse(
     .filter((f) => f.properties.mag >= minMagnitude)
     .map((feature) => {
       const p = feature.properties;
-      const [lng, lat] = feature.geometry.coordinates;
+      const [lng, lat, depth] = feature.geometry.coordinates;
       return {
         title: `Terremoto ML ${p.mag.toFixed(1)} — ${p.place}`,
         category: "TERREMOTO" as const,
         severity: magnitudeToSeverity(p.mag),
-        description: `Evento sismico ${p.magType} ${p.mag.toFixed(1)} a ${p.place}. Profondità: ${p.depth.toFixed(1)} km.`,
+        description: `Evento sismico ${p.magType} ${p.mag.toFixed(1)} a ${p.place}. Profondità: ${depth?.toFixed(1) ?? "n/d"} km.`,
         source: "INGV",
         sourceUrl: `https://terremoti.ingv.it/event/${p.eventId}`,
         lat,
