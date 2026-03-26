@@ -69,7 +69,7 @@ const INGV_BASE =
   "https://webservices.ingv.it/fdsnws/event/1/query?format=geojson&minmagnitude=2.0&minlatitude=36&maxlatitude=38.5&minlongitude=11.5&maxlongitude=15.7&orderby=time&limit=50";
 
 export async function fetchINGVEvents(): Promise<ParsedIngestionEvent[]> {
-  const startTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const startTime = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().slice(0, 19);
   const url = `${INGV_BASE}&starttime=${startTime}`;
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) throw new Error(`INGV API error: ${res.status}`);
