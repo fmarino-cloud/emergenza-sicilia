@@ -4,10 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
+import nextDynamic from "next/dynamic";
 import type { HeroMapEvent } from "@/components/map/hero-map";
 
-const HeroMap = dynamic(() => import("@/components/map/hero-map"), { ssr: false });
+const HeroMap = nextDynamic(() => import("@/components/map/hero-map"), { ssr: false });
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 60;
