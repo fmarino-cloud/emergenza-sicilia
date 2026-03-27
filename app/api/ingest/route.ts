@@ -7,7 +7,7 @@ import { fetchPCRadarNowcasting } from "@/lib/ingestion/pc-radar";
 import { fetchOpenMeteoEvents } from "@/lib/ingestion/open-meteo";
 import { fetchRFIEvents } from "@/lib/ingestion/rfi";
 import { fetchPCNationalEvents } from "@/lib/ingestion/pc-national";
-import { fetchPCSiciliaEvents } from "@/lib/ingestion/pc-sicilia";
+import { fetchPCSiciliaEvents, fetchPCSiciliaIdroEvents, fetchPCSiciliaIncendiEvents } from "@/lib/ingestion/pc-sicilia";
 import { fetchARPAAriaEvents } from "@/lib/ingestion/arpa-aria";
 import { fetchARPAPrevisioniEvents } from "@/lib/ingestion/arpa-previsioni";
 import { fetchISPRAMareEvents } from "@/lib/ingestion/ispra-mare";
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const results = { ingv: 0, pc: 0, anas: 0, pc_radar: 0, open_meteo: 0, rfi: 0, pc_national: 0, pc_sicilia: 0, arpa_aria: 0, arpa_previsioni: 0, ispra_mare: 0, nasa_firms: 0, cciss: 0, meteoalarm: 0, sias: 0, errors: [] as string[] };
+  const results = { ingv: 0, pc: 0, anas: 0, pc_radar: 0, open_meteo: 0, rfi: 0, pc_national: 0, pc_sicilia: 0, arpa_aria: 0, arpa_previsioni: 0, ispra_mare: 0, nasa_firms: 0, cciss: 0, meteoalarm: 0, sias: 0, pc_sicilia_idro: 0, pc_sicilia_incendi: 0, errors: [] as string[] };
 
   // INGV
   try {
@@ -243,6 +243,28 @@ export async function POST(request: NextRequest) {
     }
   } catch (err: any) {
     results.errors.push(`SIAS: ${err.message}`);
+  }
+
+  // PC Sicilia — Avvisi Idrogeologici
+  try {
+    const events = await fetchPCSiciliaIdroEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "PC_SICILIA_IDRO", type: "API", category: "MALTEMPO" });
+      if (created) results.pc_sicilia_idro++;
+    }
+  } catch (err: any) {
+    results.errors.push(`PC_SICILIA_IDRO: ${err.message}`);
+  }
+
+  // PC Sicilia — Avvisi Incendi e Calore
+  try {
+    const events = await fetchPCSiciliaIncendiEvents();
+    for (const e of events) {
+      const created = await upsertIngestionEvent(e, { source: "PC_SICILIA_INCENDI", type: "RSS", category: "INCENDIO" });
+      if (created) results.pc_sicilia_incendi++;
+    }
+  } catch (err: any) {
+    results.errors.push(`PC_SICILIA_INCENDI: ${err.message}`);
   }
 
   // Cleanup SourceItems older than 30 days

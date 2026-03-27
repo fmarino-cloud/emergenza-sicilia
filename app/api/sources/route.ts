@@ -94,6 +94,18 @@ const SOURCE_META = [
     description: "Rete di stazioni meteo siciliane. Dati di precipitazioni, vento e temperatura in tempo reale per le 9 province.",
     url: "https://www.sias.regione.sicilia.it",
   },
+  {
+    key: "PC_SICILIA_IDRO",
+    name: "PC Sicilia — Avvisi Idrogeologici",
+    description: "Avvisi di rischio idrogeologico emessi dal Dipartimento Regionale della Protezione Civile Siciliana.",
+    url: "https://www.protezionecivilesicilia.it",
+  },
+  {
+    key: "PC_SICILIA_INCENDI",
+    name: "PC Sicilia — Avvisi Incendi e Calore",
+    description: "Avvisi di rischio incendi boschivi e ondate di calore emessi dalla Protezione Civile Siciliana.",
+    url: "https://www.protezionecivilesicilia.it",
+  },
 ] as const;
 
 export async function GET() {

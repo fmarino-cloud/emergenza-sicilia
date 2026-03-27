@@ -25,6 +25,8 @@ const SOURCE_META = [
   { key: "CCISS", name: "CCISS – Viaggiare Informati e Sicuri", description: "Centro Coordinamento Informazioni sulla Sicurezza Stradale. Feed RSS con avvisi traffico, incidenti e viabilità sulle strade siciliane.", url: "https://www.viaggiareinformati.it", icon: "🛣️" },
   { key: "METEOALARM", name: "Meteoalarm – Allerte Meteo Europee", description: "Sistema europeo di allerta meteo. Fornisce avvisi ufficiali di livello giallo/arancione/rosso per la Sicilia.", url: "https://www.meteoalarm.org", icon: "🌩️" },
   { key: "SIAS", name: "SIAS – Servizio Agrometeorologico Siciliano", description: "Rete di stazioni meteo siciliane. Dati di precipitazioni, vento e temperatura in tempo reale per le 9 province.", url: "https://www.sias.regione.sicilia.it", icon: "🌡️" },
+  { key: "PC_SICILIA_IDRO", name: "PC Sicilia — Avvisi Idrogeologici", description: "Avvisi di rischio idrogeologico emessi dal Dipartimento Regionale della Protezione Civile Siciliana.", url: "https://www.protezionecivilesicilia.it", icon: "🌊" },
+  { key: "PC_SICILIA_INCENDI", name: "PC Sicilia — Avvisi Incendi e Calore", description: "Avvisi di rischio incendi boschivi e ondate di calore emessi dalla Protezione Civile Siciliana.", url: "https://www.protezionecivilesicilia.it", icon: "🔥" },
 ] as const;
 
 export default async function FontiPage() {

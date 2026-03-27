@@ -47,6 +47,8 @@ enum SourceName {
   CCISS
   METEOALARM
   SIAS
+  PC_SICILIA_IDRO
+  PC_SICILIA_INCENDI
 }
 
 enum SourceType {
