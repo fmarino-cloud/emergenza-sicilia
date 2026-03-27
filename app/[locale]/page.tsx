@@ -4,6 +4,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
+import type { HeroMapEvent } from "@/components/map/hero-map";
+
+const HeroMap = dynamic(() => import("@/components/map/hero-map"), { ssr: false });
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 60;
@@ -49,6 +53,7 @@ export default async function HomePage() {
       select: {
         id: true, title: true, category: true, severity: true,
         description: true, source: true, publishedAt: true, provincia: true, status: true,
+        lat: true, lng: true,
       },
     }),
     prisma.sourceItem.findMany({
@@ -89,49 +94,62 @@ export default async function HomePage() {
     publishedAt: e.publishedAt.toISOString(),
   }));
 
+  const heroMapEvents: HeroMapEvent[] = events
+    .filter((e) => e.lat !== null && e.lng !== null)
+    .map((e) => ({
+      id: e.id,
+      title: e.title,
+      category: e.category,
+      severity: e.severity,
+      lat: e.lat as number,
+      lng: e.lng as number,
+    }));
+
   const statusConf = STATUS_CONFIG[maxSev];
 
   return (
     <>
-      {/* Hero — full-width gradient */}
-      <section className="bg-gradient-to-br from-es-navy to-es-blue text-white py-10 px-4">
-        <div className="mx-auto max-w-content">
-          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-heading font-bold text-white mb-2 leading-tight">
-                Sicilia — Situazione in tempo reale
-              </h1>
-              <p className="text-white/70 font-body text-sm">
-                {events.length} eventi attivi · Fonti: {activeSources.map((s) => s.source).join(" · ")}
-              </p>
-            </div>
-            <div
-              className={cn(
-                "inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-heading font-semibold text-white shrink-0",
-                statusConf.badge
-              )}
-            >
-              <span className={cn("w-2.5 h-2.5 rounded-full shrink-0", statusConf.dot)} aria-hidden="true" />
-              {statusConf.label}
-            </div>
-          </div>
+      {/* Hero — mappa Sicilia full-width */}
+      <section className="relative w-full h-[420px] sm:h-[500px] overflow-hidden">
+        {/* Mappa */}
+        <HeroMap events={heroMapEvents} />
 
-          <div className="grid grid-cols-4 sm:grid-cols-7 gap-3">
-            {ALL_CATEGORIES.map((cat) => {
-              const count = categoryStats.find((s) => s.category === cat)?._count ?? 0;
-              return (
-                <div
-                  key={cat}
-                  className="bg-white/10 border border-white/20 rounded-xl p-3 text-center hover:bg-white/15 transition-colors"
-                >
-                  <div className="text-2xl mb-1" aria-hidden="true">{CATEGORY_ICONS[cat]}</div>
-                  <div className="text-2xl font-heading font-bold text-white">{count}</div>
-                  <div className="text-[10px] text-white/70 font-body capitalize mt-0.5 leading-tight">
-                    {cat.toLowerCase()}
+        {/* Overlay gradiente basso */}
+        <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-es-navy/90 via-es-navy/40 to-transparent z-10 pointer-events-none" />
+
+        {/* Status badge — top right */}
+        <div className="absolute top-4 right-4 z-20">
+          <div
+            className={cn(
+              "inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-heading font-semibold text-white backdrop-blur-sm bg-black/30",
+              statusConf.badge
+            )}
+          >
+            <span className={cn("w-2 h-2 rounded-full shrink-0", statusConf.dot)} aria-hidden="true" />
+            {statusConf.label}
+          </div>
+        </div>
+
+        {/* Chip categorie — bottom overlay */}
+        <div className="absolute inset-x-0 bottom-0 z-20 px-4 pb-4">
+          <div className="mx-auto max-w-content">
+            <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
+              {ALL_CATEGORIES.map((cat) => {
+                const count = categoryStats.find((s) => s.category === cat)?._count ?? 0;
+                return (
+                  <div
+                    key={cat}
+                    className="bg-black/40 backdrop-blur-sm border border-white/20 rounded-xl p-2.5 text-center"
+                  >
+                    <div className="text-xl mb-0.5" aria-hidden="true">{CATEGORY_ICONS[cat]}</div>
+                    <div className="text-lg font-heading font-bold text-white">{count}</div>
+                    <div className="text-[9px] text-white/70 font-body capitalize leading-tight">
+                      {cat.toLowerCase()}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
