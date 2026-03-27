@@ -20,16 +20,6 @@ const CKAN_BASE = "https://dati.regione.siciliana.it/api/3/action";
 const CKAN_IDRO_PACKAGE = "protezione-civile-avvisi-idrogeologico";
 const CKAN_INCENDI_PACKAGE = "protezione-civile-avvisi-incendi";
 
-// Filtro geo-testuale (questa fonte è già dedicata alla Sicilia, ma lo applichiamo
-// come guardia contro eventuali false corrispondenze di scraping)
-const SICILIA_KEYWORDS = [
-  "sicilia", "siciliana", "siciliano", "siciliane", "siciliani",
-  "palermo", "catania", "messina", "agrigento", "caltanissetta",
-  "enna", "ragusa", "siracusa", "trapani",
-  "etna", "stromboli", "vulcano", "lipari", "eolie", "pantelleria",
-  "lampedusa", "allerta", "avviso", "bollettino", "rischio",
-];
-
 // Pattern to match individual news items in the HTML
 // Each item is a link like: <a href="/it/NNNNN-title.asp">...</a>
 const ITEM_PATTERN = /<a\s+href="(\/it\/\d{4,6}-[^"]+\.asp)"[^>]*>([\s\S]*?)<\/a>/gi;
