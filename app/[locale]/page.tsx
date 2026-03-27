@@ -45,7 +45,7 @@ const STATUS_CONFIG: Record<Severity, { label: string; badge: string; dot: strin
 };
 
 export default async function HomePage() {
-  const [events, feedItems, editorials, categoryStats, activeSources] = await Promise.all([
+  const [events, feedItems, editorials, categoryStats] = await Promise.all([
     prisma.event.findMany({
       where: { status: { not: "CHIUSO" } },
       orderBy: { publishedAt: "desc" },
@@ -74,10 +74,6 @@ export default async function HomePage() {
       by: ["category"],
       where: { status: { not: "CHIUSO" } },
       _count: true,
-    }),
-    prisma.sourceItem.findMany({
-      distinct: ["source"],
-      select: { source: true },
     }),
   ]);
 
