@@ -61,8 +61,8 @@ export default function HeroMap({ events }: HeroMapProps) {
         maxZoom: 18,
       }).addTo(map);
 
-      // Force fit to Sicily
-      map.fitBounds(SICILY_BOUNDS, { padding: [0, 0] });
+      // Fit Sicily with bottom padding to account for the stats overlay
+      map.fitBounds(SICILY_BOUNDS, { paddingBottomRight: [0, 150], paddingTopLeft: [0, 0] });
 
       // Event markers
       events.forEach((event) => {

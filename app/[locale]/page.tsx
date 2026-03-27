@@ -45,7 +45,7 @@ const STATUS_CONFIG: Record<Severity, { label: string; badge: string; dot: strin
 };
 
 export default async function HomePage() {
-  const [events, feedItems, editorials, categoryStats] = await Promise.all([
+  const [events, feedItems, editorials, categoryStats, mapEvents] = await Promise.all([
     prisma.event.findMany({
       where: { status: { not: "CHIUSO" } },
       orderBy: { publishedAt: "desc" },
@@ -75,6 +75,10 @@ export default async function HomePage() {
       where: { status: { not: "CHIUSO" } },
       _count: true,
     }),
+    prisma.event.findMany({
+      where: { status: { not: "CHIUSO" }, lat: { not: null }, lng: { not: null } },
+      select: { id: true, title: true, category: true, severity: true, lat: true, lng: true },
+    }),
   ]);
 
   const SORDER = ["BASSA", "MEDIA", "ALTA", "CRITICA"];
@@ -90,16 +94,14 @@ export default async function HomePage() {
     publishedAt: e.publishedAt.toISOString(),
   }));
 
-  const heroMapEvents: HeroMapEvent[] = events
-    .filter((e) => e.lat !== null && e.lng !== null)
-    .map((e) => ({
-      id: e.id,
-      title: e.title,
-      category: e.category,
-      severity: e.severity,
-      lat: e.lat as number,
-      lng: e.lng as number,
-    }));
+  const heroMapEvents: HeroMapEvent[] = mapEvents.map((e) => ({
+    id: e.id,
+    title: e.title,
+    category: e.category,
+    severity: e.severity,
+    lat: e.lat as number,
+    lng: e.lng as number,
+  }));
 
   const statusConf = STATUS_CONFIG[maxSev];
 
