@@ -30,11 +30,6 @@ const SICILIA_KEYWORDS = [
   "lampedusa", "allerta", "avviso", "bollettino", "rischio",
 ];
 
-function isSicilia(text: string): boolean {
-  const lower = ` ${text.toLowerCase()} `;
-  return SICILIA_KEYWORDS.some((k) => lower.includes(k));
-}
-
 // Pattern to match individual news items in the HTML
 // Each item is a link like: <a href="/it/NNNNN-title.asp">...</a>
 const ITEM_PATTERN = /<a\s+href="(\/it\/\d{4,6}-[^"]+\.asp)"[^>]*>([\s\S]*?)<\/a>/gi;

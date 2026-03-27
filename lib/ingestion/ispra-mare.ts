@@ -30,13 +30,6 @@ const SICILIAN_STATIONS: StationDef[] = [
   { id: "PEM", name: "Porto Empedocle",  slug: "porto-empedocle",  lat: 37.290, lng: 13.530, provincia: "AG" },
 ];
 
-// The Linked ISPRA RDF endpoint (CC-BY 4.0)
-// Data structure: /dataset/stazione/{id}/osservazioni
-const LINKED_ISPRA_BASE = "https://dati.isprambiente.it/dataset/mareografi-dati-meteo-marini/resource";
-
-// Mistral portal API for RMN dataset
-const MISTRAL_API = "https://api.mistralportal.it/v1/datasets/mareografi-dati-meteo-marini/resources";
-
 // mareografico.it station data page pattern
 const STATION_DATA_URL = "https://www.mareografico.it/it/stazioni.html";
 

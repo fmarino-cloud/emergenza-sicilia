@@ -169,7 +169,6 @@ export async function fetchARPAAriaEvents(): Promise<ParsedIngestionEvent[]> {
     }
     // If CKAN API didn't yield results, try known direct CSV URLs (zip format)
     // The anagrafica dataset exposes a stations CSV (not time-series, but useful for validation)
-    const stationsUrl = "https://dati.regione.sicilia.it/download/dataset/arpa-qualita-aria-anagrafica/filesystem/arpa-qualita-aria-anagrafica-stazioni_csv.zip";
     // ZIP files can't be parsed without decompression lib – skip and return empty
     console.warn("[ARPA_ARIA] No accessible real-time CSV endpoint found. Dataset URLs are ZIP files or require auth.");
     return [];
